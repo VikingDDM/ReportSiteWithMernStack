@@ -125,11 +125,20 @@ export const getUserWeeklyReportsHandler = async (
     today.setMinutes(0);
     today.setSeconds(0);
 
-    const millisecondAfter = Date.parse(today.toLocaleString()) - (86400000 * (weeklyDay - 1));
-    const millisecondBefore = millisecondAfter + 86400000 * 5;
+    let millisecondAfter;
+
+    if(weeklyDay === 0){
+      millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * (weeklyDay - 1);
+    } else {
+      millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * weeklyDay;
+    }
+    
+    const millisecondBefore = millisecondAfter + 86400000 * 4;
 
     weeklyFirstDay.setTime(millisecondAfter);
     weeklyLastDay.setTime(millisecondBefore);
+    weeklyFirstDay.setHours(-7); weeklyFirstDay.setMinutes(0);
+    weeklyLastDay.setHours(16); weeklyLastDay.setMinutes(59);
 
     const query = {
       user: { $eq: res.locals.user._id },
@@ -208,7 +217,7 @@ export const getWeeklyReportStatusHandler = async (
   try {
     const today = new Date();
     const weeklyDay = today.getDay();
-    
+
     const weeklyLastDay = new Date();
     const weeklyFirstDay = new Date();
 
@@ -216,11 +225,20 @@ export const getWeeklyReportStatusHandler = async (
     today.setMinutes(0);
     today.setSeconds(0);
 
-    const millisecondAfter = Date.parse(today.toLocaleString()) - (86400000 * (weeklyDay - 1));
-    const millisecondBefore = millisecondAfter + 86400000 * 5;
+    let millisecondAfter;
+
+    if(weeklyDay === 0){
+      millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * (weeklyDay - 1);
+    } else {
+      millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * weeklyDay;
+    }
+    
+    const millisecondBefore = millisecondAfter + 86400000 * 4;
 
     weeklyFirstDay.setTime(millisecondAfter);
     weeklyLastDay.setTime(millisecondBefore);
+    weeklyFirstDay.setHours(-7); weeklyFirstDay.setMinutes(0);
+    weeklyLastDay.setHours(16); weeklyLastDay.setMinutes(59);
 
     const query = {
       created_at: { $gte: weeklyFirstDay, $lte: weeklyLastDay }

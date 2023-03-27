@@ -6,15 +6,10 @@ import { toast } from 'react-toastify';
 
 type IAdminPaymentStatusDeleteButtonProps = {
     payment_id: string;
-    settingPaymentID: () => void;
   }
-const AdminPaymentStatusDeleteButton = ({payment_id, settingPaymentID} : IAdminPaymentStatusDeleteButtonProps) => {
+const AdminPaymentStatusDeleteButton = ({ payment_id} : IAdminPaymentStatusDeleteButtonProps) => {
 
-    const [deletePayInfo, { isLoading, error, isSuccess, isError }] = useDeletePaymentMutation();
-
-    useEffect(() => {
-      settingPaymentID(); 
-    }, [payment_id])
+    const [deletePayment, { isLoading, error, isSuccess, isError }] = useDeletePaymentMutation();
 
     useEffect(() => {
         if (isSuccess) {
@@ -37,15 +32,14 @@ const AdminPaymentStatusDeleteButton = ({payment_id, settingPaymentID} : IAdminP
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [isLoading]);
     
-      const onDeleteHandler = (id: string) => {
-
+      const onDeleteHandler = () => {
         if (window.confirm('Are you sure')) {
-          deletePayInfo(id);
+          deletePayment(payment_id);
         }
     };
 
     return (
-        <Button onClick={() => {onDeleteHandler(payment_id)}}>
+        <Button onClick={() => {onDeleteHandler()}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

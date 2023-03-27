@@ -202,7 +202,7 @@ const AdminPaymentHistoryPage = () => {
                         <BorderColorIcon style={{color:"dodgerblue"}} />
                       </Button>
                       
-                      <AdminPaymentStatusDeleteButton settingPaymentID={() => setDataid(row?._id) } payment_id={dataid} />
+                      <AdminPaymentStatusDeleteButton payment_id={dataid} />
                     </StyledTableCell>
                   </TableRow>
                 ))}

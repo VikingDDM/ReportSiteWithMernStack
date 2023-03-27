@@ -14,7 +14,7 @@ import { object, string, TypeOf } from 'zod';
 import { useCreatePayHistoryMutation } from '../redux/api/paymentApi';
 import { toast } from 'react-toastify';
 import AdminPaymentStatusTable from '../components/adminPaymentStatusTable';
-
+import AdminPaymentStatusIllu from '../components/adminPaymentStatusIllu';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.4rem;
@@ -119,6 +119,7 @@ const AdminPaymentStatusPage = () => {
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Status</h5>
+          <AdminPaymentStatusIllu />
           <LoadingButton onClick={modelHandleShow}>
             Add
           </LoadingButton>

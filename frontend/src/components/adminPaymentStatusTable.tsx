@@ -190,12 +190,12 @@ function AdminPaymentStatusTable() {
                 <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
                   {row?.created_at}
                 </StyledTableCell>
-                <StyledTableCell align="center" style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} >
+                <StyledTableCell align="center">
                   <Button onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   
-                  <AdminPaymentStatusDeleteButton settingPaymentID={() => setDataid(row?._id) } payment_id={dataid} />
+                  <AdminPaymentStatusDeleteButton payment_id={row?._id} />
                 </StyledTableCell>
               </TableRow>
             ))}

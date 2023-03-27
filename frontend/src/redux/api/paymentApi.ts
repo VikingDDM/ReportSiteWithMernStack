@@ -43,7 +43,7 @@ export const paymentApi = createApi({
          results?.data.payment,
     }),
 
-    updatePayHistory: builder.mutation<any, { id: string; payment: IUpdatePayHistory }>(
+    updatePayHistory: builder.mutation<any, { id: string; payment: IUpdatePayHistory; }>(
       {
         query({ id, payment }) {
           return {

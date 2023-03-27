@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf } from 'zod';
+import { date, number, object, string, TypeOf } from 'zod';
 
 export const createPayPlanSchema = object({
     body: object({
@@ -24,6 +24,7 @@ const params = {
       paymentId: string(),
     }),
 };
+
 
 export const updatePayHistorySchema = object({
   ...params,

@@ -2,7 +2,7 @@ import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import paymentModel, { Payment } from "../models/paymentModel";
 
 export const createPayment = async ({
-    input
+    input,
 }: { 
     input: Partial<Payment>;
 }) => {
@@ -10,11 +10,33 @@ export const createPayment = async ({
 };
 
 
+export const createMonthlyTotal = async ({
+  monthlyTotal
+}: { 
+  monthlyTotal: string;
+}) => {
+  return paymentModel.create({ monthlyAmount: monthlyTotal});
+};
+
+export const createEachMonthlyTotal = async ({
+  eachMonthlyTotal,
+  eachName
+}: { 
+  eachMonthlyTotal: string;
+  eachName: string;
+}) => {
+  return paymentModel.create({ eachMonthlyAmount: eachMonthlyTotal, name: eachName});
+};
+
 export const findPayment = async (
   query: FilterQuery<Payment>,
   options: QueryOptions = {}
 ) => {
   return await paymentModel.find(query, {}, options);
+};
+
+export const findPaymentById = async (id: string) => {
+  return paymentModel.findById(id).lean();
 };
 
 export const findAndUpdatePayment = async (

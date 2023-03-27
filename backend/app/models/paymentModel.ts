@@ -27,7 +27,7 @@ export class Payment {
   @prop()
   id: string;
 
-  @prop({ required: true })
+  @prop()
   name: string;
 
   @prop()
@@ -41,6 +41,9 @@ export class Payment {
 
   @prop()
   monthlyAmount: string;
+
+  @prop()
+  eachMonthlyAmount: string;
 
   @prop()
   yearlyAmount: string;
