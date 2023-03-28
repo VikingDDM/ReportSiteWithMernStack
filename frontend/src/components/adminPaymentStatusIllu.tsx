@@ -1,57 +1,63 @@
+import * as React from 'react';
 import { Container } from '@mui/system';
+import FullScreenLoader from './fullScreenLoader';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { useGetMonthlyAllQuery } from '../redux/api/paymentApi';
 
-const data = [
-    {
-      name: 'Page A',
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Page B',
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Page C',
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: 'Page D',
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'Page E',
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Page F',
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Page G',
-      income: 3490,
-      plan: 4300,
-      amt: 2100,
-    },
-  ];
 
 const AdminPaymentStatusIllu = () => {
+  const [chartData, setChartData] = React.useState([]);
+
+  const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery();
+  useEffect(() => {
+    let iniChartData :any = [];
+    if(allMonthlyHistory !== undefined){
+    allMonthlyHistory[2]?.map((planValue:any,key:any) => {
+      let chartValue:any = {
+        name: '',
+        income: 0,
+        plan: 0,
+        amt: 2200,
+      }
+      chartValue.name = planValue.name;
+      chartValue.plan = parseInt(planValue.plan);
+      const incomeValue = allMonthlyHistory[1]?.find((value:any) => {return value.name === planValue.name; })
+      if(Number.isNaN(incomeValue.eachMonthlyAmount)){incomeValue.income = 0}
+      else { chartValue.income = parseInt(incomeValue.eachMonthlyAmount) }
+      console.log(chartValue)
+      iniChartData.push(chartValue);
+      
+    })}
+    setChartData(iniChartData)
+  }, [allMonthlyHistory])
+  
+  useEffect(() => {
+    if (isError) {
+      if (Array.isArray((error as any)?.data?.error)) {
+        (error as any).data.error.forEach((el: any) =>
+          toast.error(el.message, {
+            position: 'top-right',
+          })
+        );
+      } else {
+        toast.error((error as any)?.data?.message, {
+          position: 'top-right',
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
 
     return(
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4, display:"flex" }}>
@@ -59,7 +65,7 @@ const AdminPaymentStatusIllu = () => {
               <BarChart
                 width={700}
                 height={300}
-                data={data}
+                data={chartData}
                 margin={{
                   top: 5,
                   right: 30,

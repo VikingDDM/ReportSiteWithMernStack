@@ -15,7 +15,7 @@ import {
   findPayment,
   findPaymentById,
 } from "../services/paymentService";
-import { findAllUsers } from "../services/userService";
+import { findAllUsers, findUserById } from "../services/userService";
 import AppError from "../utils/appError";
 
 export const createPayPlanHandler = async (
@@ -46,6 +46,8 @@ export const getPayPlanHandler = async (
     const today = new Date();
     const firstDay = new Date();
     const lastDay = new Date();
+    const user_id = res.locals.user._id;
+    const user = await findUserById(user_id)
 
     const thisMonth = today.getMonth();
     
@@ -65,7 +67,8 @@ export const getPayPlanHandler = async (
     
     const query = {
       created_at: { $gte: firstDay, $lte: lastDay },
-      plan: { $ne: null}
+      plan: { $ne: null},
+      name: {$eq: user.name}
     }
     const payment = await findPayment(query);
     
@@ -103,6 +106,27 @@ export const updatePaymentPlanHandler = async (
       data: {
         post: payment,
       },
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const deletePayPlanHandler = async (
+  req: Request<DeletePaymentInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payment:any = await findOneAndDelete({ _id: req.params.paymentId });
+
+    if (!payment) {
+      return next(new AppError("Payment with that ID not found", 404));
+    } 
+
+    res.status(204).json({
+      status: "success",
+      data: null,
     });
   } catch (err: any) {
     next(err);
@@ -362,3 +386,78 @@ export const deletePaymentHandler = async (
   }
 };
 
+export const getAllMonthlyPaymentHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const today = new Date();
+    const firstDay = new Date();
+    const lastDay = new Date();
+
+    const thisMonth = today.getMonth();
+    
+    const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+    const nextMonth = thisMonth === 11 ? 0 : thisMonth + 1;
+    
+
+    if(today.getDate() <= 24) {
+        firstDay.setMonth(lastMonth);          
+        lastDay.setMonth(thisMonth);
+      } else {
+        firstDay.setMonth(thisMonth); 
+        lastDay.setMonth(nextMonth);}
+   
+    firstDay.setDate(26); firstDay.setHours(-7); firstDay.setMinutes(0);
+    lastDay.setDate(25); lastDay.setHours(16); lastDay.setMinutes(59);
+    
+    const queryMonthlyAmount = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      monthlyAmount: { $ne: null}
+    }
+    const queryMonthlyEachAmount = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      eachMonthlyAmount: { $ne: null}
+    }
+    const queryMonthlyPayPlan = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      plan: { $ne: null},
+    }
+    const monthlyAmounts:any = await findPayment(queryMonthlyAmount);
+    const eachMonthlyAmounts:any = await findPayment(queryMonthlyEachAmount);
+    const monthlyPayPlan = await findPayment(queryMonthlyPayPlan);
+    let realEachMonthlyAmounts : any = [];
+    let realMonthlyAmounts:any
+
+    monthlyAmounts.sort( (p1:any, p2:any) => {
+      if (p1.created_at < p2.created_at) return 1;
+      if (p1.created_at > p2.created_at) return -1;
+      return 0;
+    });
+
+    realMonthlyAmounts = monthlyAmounts[0]
+    monthlyPayPlan.map((eachPlan) => {
+      const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
+        return value.name === eachPlan.name;
+      })
+      individualAmounts.sort( (p1:any, p2:any) => {
+        if (p1.created_at < p2.created_at) return 1;
+        if (p1.created_at > p2.created_at) return -1;
+        return 0;
+      });
+      if(individualAmounts[0] === undefined){realEachMonthlyAmounts.push({name: eachPlan.name, eachMonthlyAmount: "0"})}
+       else {realEachMonthlyAmounts.push(individualAmounts[0]);}
+    })
+    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan]
+    res.status(200).json({
+      status: "success",
+      data: {
+        payment
+      },
+    });
+    
+  } catch (err: any) {
+    next(err);
+  }
+};
