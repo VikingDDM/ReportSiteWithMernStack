@@ -120,16 +120,16 @@ export const paymentApi = createApi({
           credentials: 'include',
         };
       },
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }: any) => ({
-                type: 'Payment' as const,
-                id,
-              })),
-              { type: 'Payment', id: 'LIST' },
-            ]
-          : [{ type: 'Payment', id: 'LIST' }],
+      // providesTags: (result) =>
+      //   result
+      //     ? [
+      //         ...result.map(({ id }: any) => ({
+      //           type: 'Payment' as const,
+      //           id,
+      //         })),
+      //         { type: 'Payment', id: 'LIST' },
+      //       ]
+      //     : [{ type: 'Payment', id: 'LIST' }],
       transformResponse: (results: { data: { payment: any} }) =>
         results?.data.payment,
    }),

@@ -12,9 +12,9 @@ export const excludedFields = ['password'];
 // Cookie options
 const accessTokenCookieOptions: CookieOptions = {
   expires: new Date(
-    Date.now() + config.get<number>('accessTokenExpiresIn') * 60 * 1000
+    Date.now() + config.get<number>('accessTokenExpiresIn') * 60 * 1000 * 24
   ),
-  maxAge: config.get<number>('accessTokenExpiresIn') * 60 * 1000,
+  maxAge: config.get<number>('accessTokenExpiresIn') * 60 * 1000 * 24,
   httpOnly: true,
   sameSite: 'lax',
 };

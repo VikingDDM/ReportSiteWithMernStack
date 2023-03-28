@@ -396,18 +396,27 @@ export const getAllMonthlyPaymentHandler = async (
     const firstDay = new Date();
     const lastDay = new Date();
 
-    const thisMonth = today.getMonth();
-    
-    const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
-    const nextMonth = thisMonth === 11 ? 0 : thisMonth + 1;
-    
+    let thisMonth = today.getMonth();
+    let thisYear = today.getFullYear();
+
+    let startYear = thisYear;
+    let endYear = thisYear;
+    let lastMonth = thisMonth-1;
+    let nextMonth = thisMonth+1;
+    if(thisMonth === 0){lastMonth = 11; startYear = thisYear-1;}
+    if(thisMonth === 11){nextMonth = 0; endYear = thisYear+1;}
 
     if(today.getDate() <= 24) {
         firstDay.setMonth(lastMonth);          
         lastDay.setMonth(thisMonth);
+        firstDay.setFullYear(startYear);          
+        lastDay.setFullYear(thisYear);
       } else {
         firstDay.setMonth(thisMonth); 
-        lastDay.setMonth(nextMonth);}
+        lastDay.setMonth(nextMonth);
+        firstDay.setFullYear(thisYear);          
+        lastDay.setFullYear(endYear);
+      }
    
     firstDay.setDate(26); firstDay.setHours(-7); firstDay.setMinutes(0);
     lastDay.setDate(25); lastDay.setHours(16); lastDay.setMinutes(59);
@@ -436,8 +445,40 @@ export const getAllMonthlyPaymentHandler = async (
       return 0;
     });
 
-    realMonthlyAmounts = monthlyAmounts[0]
-    monthlyPayPlan.map((eachPlan) => {
+    realMonthlyAmounts = monthlyAmounts[0];
+    
+    const realMonthlyPayPlan:any = [];
+    monthlyPayPlan.sort( (p1:any, p2:any) => {
+      if (p1.created_at > p2.created_at) return -1;
+      if (p1.created_at < p2.created_at) return 1;
+      return 0;
+    });
+    monthlyPayPlan.sort( (p1:any, p2:any) => {
+      if (p1.name < p2.name) return 1;
+      if (p1.name > p2.name) return -1;
+      return 0;
+    });
+    monthlyPayPlan.push(monthlyPayPlan[0])
+
+    let planNums : any = [];
+    let planNum = 1;
+    monthlyPayPlan.map((eachPlan, key) => {
+      if(key-1 >= 0)
+      if(eachPlan.name === monthlyPayPlan[key-1].name){ planNum++ }
+      else {planNums.push(planNum); planNum = 1}
+      
+    })
+    let planNumArg = 0;
+    planNums.map((eachPlanNum:any) => {
+      planNumArg += eachPlanNum
+      if(today.getDate() <= 24){
+        if(eachPlanNum === thisMonth + 1){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
+      } else {
+        if(eachPlanNum === thisMonth + 2){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
+      }
+      
+    })
+    realMonthlyPayPlan.map((eachPlan:any) => {
       const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
         return value.name === eachPlan.name;
       })
@@ -449,7 +490,117 @@ export const getAllMonthlyPaymentHandler = async (
       if(individualAmounts[0] === undefined){realEachMonthlyAmounts.push({name: eachPlan.name, eachMonthlyAmount: "0"})}
        else {realEachMonthlyAmounts.push(individualAmounts[0]);}
     })
-    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan]
+    const allUsers = await findAllUsers();
+    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, realMonthlyPayPlan, allUsers]
+    res.status(200).json({
+      status: "success",
+      data: {
+        payment
+      },
+    });
+    
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const getAllYearlyPaymentHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const today = new Date();
+    const firstDay = new Date();
+    const lastDay = new Date();
+
+    const thisMonth = today.getMonth();
+    const thisYear = today.getFullYear();
+
+    let startYear = thisYear;
+    let endYear = thisYear;
+    let lastMonth = thisMonth-1;
+    let nextMonth = thisMonth+1;
+    if(thisMonth === 0){lastMonth = 11; startYear = thisYear-1;}
+    if(thisMonth === 11){nextMonth = 0; endYear = thisYear+1;}
+
+    if(today.getDate() <= 24) {
+        firstDay.setMonth(lastMonth);          
+        lastDay.setMonth(thisMonth);
+        firstDay.setFullYear(startYear);          
+        lastDay.setFullYear(thisYear);
+      } else {
+        firstDay.setMonth(thisMonth); 
+        lastDay.setMonth(nextMonth);
+        firstDay.setFullYear(thisYear);          
+        lastDay.setFullYear(endYear);
+      }
+   
+    firstDay.setDate(26); firstDay.setHours(-7); firstDay.setMinutes(0);
+    lastDay.setDate(25); lastDay.setHours(16); lastDay.setMinutes(59);
+    
+    const queryMonthlyAmount = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      monthlyAmount: { $ne: null}
+    }
+    const queryMonthlyEachAmount = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      eachMonthlyAmount: { $ne: null}
+    }
+    const queryMonthlyPayPlan = {
+      created_at: { $gte: firstDay, $lte: lastDay },
+      plan: { $ne: null},
+    }
+    const monthlyAmounts:any = await findPayment(queryMonthlyAmount);
+    const eachMonthlyAmounts:any = await findPayment(queryMonthlyEachAmount);
+    const monthlyPayPlan = await findPayment(queryMonthlyPayPlan);
+    let realEachMonthlyAmounts : any = [];
+    let realMonthlyAmounts:any
+
+    monthlyAmounts.sort( (p1:any, p2:any) => {
+      if (p1.created_at < p2.created_at) return 1;
+      if (p1.created_at > p2.created_at) return -1;
+      return 0;
+    });
+
+    realMonthlyAmounts = monthlyAmounts[0];
+    
+    const realMonthlyPayPlan:any = [];
+    monthlyPayPlan.sort( (p1:any, p2:any) => {
+      if (p1.name < p2.name) return 1;
+      if (p1.name > p2.name) return -1;
+      return 0;
+    });
+    monthlyPayPlan.push(monthlyPayPlan[0])
+
+    let planNums : any = [];
+    let planNum = 1;
+    monthlyPayPlan.map((eachPlan, key) => {
+      if(key-1 >= 0)
+      if(eachPlan.name === monthlyPayPlan[key-1].name){ planNum++ }
+      else {planNums.push(planNum); planNum = 1}
+      
+    })
+    let planNumArg = 0;
+    planNums.map((eachPlanNum:any) => {
+      planNumArg += eachPlanNum
+      if(eachPlanNum !== thisMonth + 1){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
+    })
+
+    realMonthlyPayPlan.map((eachPlan:any) => {
+      const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
+        return value.name === eachPlan.name;
+      })
+      individualAmounts.sort( (p1:any, p2:any) => {
+        if (p1.created_at < p2.created_at) return 1;
+        if (p1.created_at > p2.created_at) return -1;
+        return 0;
+      });
+      if(individualAmounts[0] === undefined){realEachMonthlyAmounts.push({name: eachPlan.name, eachMonthlyAmount: "0"})}
+       else {realEachMonthlyAmounts.push(individualAmounts[0]);}
+    })
+    const allUsers = await findAllUsers();
+    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, realMonthlyPayPlan, allUsers]
     res.status(200).json({
       status: "success",
       data: {

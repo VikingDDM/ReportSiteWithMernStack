@@ -14,30 +14,43 @@ import { useGetMonthlyAllQuery } from '../redux/api/paymentApi';
 
 const AdminPaymentStatusIllu = () => {
   const [chartData, setChartData] = React.useState([]);
+  const [cardData, setCardData] = React.useState("");
 
   const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery();
+  console.log(allMonthlyHistory)
   useEffect(() => {
     let iniChartData :any = [];
     if(allMonthlyHistory !== undefined){
-    allMonthlyHistory[2]?.map((planValue:any,key:any) => {
-      let chartValue:any = {
-        name: '',
-        income: 0,
-        plan: 0,
-        amt: 2200,
+      if(allMonthlyHistory[2].length !== 0){
+        allMonthlyHistory[2]?.map((planValue:any,key:any) => {
+          let chartValue:any = {
+            name: '',
+            income: 0,
+            plan: 0,
+            amt: 2200,
+          }
+          chartValue.name = planValue.name;
+          chartValue.plan = parseInt(planValue.plan);
+          const incomeValue = allMonthlyHistory[1]?.find((value:any) => {return value.name === planValue.name; })
+          if(Number.isNaN(incomeValue.eachMonthlyAmount)){incomeValue.income = 0}
+          else { chartValue.income = parseInt(incomeValue.eachMonthlyAmount) }
+          iniChartData.push(chartValue);
+        })
+      } else {
+        let chartValue:any = {
+          name: 'No body has set the plan.',
+          income: 0,
+          plan: 0,
+          amt: 2200,
+        }
+        iniChartData[0] = chartValue;
       }
-      chartValue.name = planValue.name;
-      chartValue.plan = parseInt(planValue.plan);
-      const incomeValue = allMonthlyHistory[1]?.find((value:any) => {return value.name === planValue.name; })
-      if(Number.isNaN(incomeValue.eachMonthlyAmount)){incomeValue.income = 0}
-      else { chartValue.income = parseInt(incomeValue.eachMonthlyAmount) }
-      console.log(chartValue)
-      iniChartData.push(chartValue);
-      
-    })}
-    setChartData(iniChartData)
+      if(allMonthlyHistory[0] !== null) {setCardData(allMonthlyHistory[0].monthlyAmount);}
+      else {setCardData('0');}
+   } 
+    setChartData(iniChartData);
   }, [allMonthlyHistory])
-  
+
   useEffect(() => {
     if (isError) {
       if (Array.isArray((error as any)?.data?.error)) {
@@ -83,7 +96,7 @@ const AdminPaymentStatusIllu = () => {
               </BarChart>
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
-              <Card sx={{  display: 'flex', flexDirection: 'column' }}>
+              <Card sx={{  display: 'flex', flexDirection: 'column', width: 270 }}>
                 <CardMedia
                   sx={{ height: 140 }}
                   image='/monthlyPay.jpg'
@@ -91,11 +104,10 @@ const AdminPaymentStatusIllu = () => {
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+                    Total Amount
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with over 6,000
-                    species, ranging across all continents except Antarctica
+                  <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
+                    {cardData}$
                   </Typography>
                 </CardContent>
               </Card>

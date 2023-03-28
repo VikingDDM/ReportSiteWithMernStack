@@ -13,6 +13,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { object, string, TypeOf } from 'zod';
 import { useCreatePayHistoryMutation } from '../redux/api/paymentApi';
 import { toast } from 'react-toastify';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import AdminPaymentStatusTable from '../components/adminPaymentStatusTable';
 import AdminPaymentStatusIllu from '../components/adminPaymentStatusIllu';
 
@@ -55,6 +59,11 @@ const AdminPaymentStatusPage = () => {
     // model action section
     const [modelShow, setModelShow] = useState(false);
     const modelHandleShow = () => setModelShow(true);
+    const [age, setAge] = React.useState('');
+
+    const handleChange = (event: SelectChangeEvent) => {
+      setAge(event.target.value as string);
+    };
 
     const handleClose = () => {
       setModelShow(false);
@@ -118,7 +127,7 @@ const AdminPaymentStatusPage = () => {
 
     return(
         <Container>
-          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Status</h5>
+          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Status This Month</h5>
           <AdminPaymentStatusIllu />
           <LoadingButton onClick={modelHandleShow}>
             Add
@@ -136,6 +145,7 @@ const AdminPaymentStatusPage = () => {
                  <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
+                                  
                           <p style={{margin:"unset", color:"gray"}}>Name</p>
                           <TextField
                             fullWidth 
@@ -144,6 +154,18 @@ const AdminPaymentStatusPage = () => {
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('name')}
                           />  
+                          {/* <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={age}
+                            fullWidth
+                            onChange={handleChange}
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                          >
+                            <MenuItem value={10}>Ten</MenuItem>
+                            <MenuItem value={20}>Twenty</MenuItem>
+                            <MenuItem value={30}>Thirty</MenuItem>
+                          </Select> */}
                           <p style={{margin:"unset", color:"gray"}}>Payment Mothod</p>
                           <TextField
                             fullWidth 

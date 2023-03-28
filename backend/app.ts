@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: ['http://localhost:3000', 'http://192.168.112.78:3000'],
   })
 );
 

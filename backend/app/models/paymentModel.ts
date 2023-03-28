@@ -44,9 +44,6 @@ export class Payment {
 
   @prop()
   eachMonthlyAmount: string;
-
-  @prop()
-  yearlyAmount: string;
   
 }
 
