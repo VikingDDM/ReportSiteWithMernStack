@@ -21,9 +21,9 @@ const accessTokenCookieOptions: CookieOptions = {
 
 const refreshTokenCookieOptions: CookieOptions = {
   expires: new Date(
-    Date.now() + config.get<number>('refreshTokenExpiresIn') * 60 * 1000
+    Date.now() + config.get<number>('refreshTokenExpiresIn') * 60 * 1000 * 24
   ),
-  maxAge: config.get<number>('refreshTokenExpiresIn') * 60 * 1000,
+  maxAge: config.get<number>('refreshTokenExpiresIn') * 60 * 1000 * 24,
   httpOnly: true,
   sameSite: 'lax',
 };

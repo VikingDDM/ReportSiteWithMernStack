@@ -11,13 +11,17 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useGetMonthlyAllQuery } from '../redux/api/paymentApi';
 
+export interface ChildProps{
+  transUser: (users: any) => void
+}
 
-const AdminPaymentStatusIllu = () => {
+const AdminPaymentStatusIllu = (props: ChildProps) => {
   const [chartData, setChartData] = React.useState([]);
   const [cardData, setCardData] = React.useState("");
+  let gotUsers : any = [];
 
   const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery();
-  console.log(allMonthlyHistory)
+
   useEffect(() => {
     let iniChartData :any = [];
     if(allMonthlyHistory !== undefined){
@@ -47,6 +51,8 @@ const AdminPaymentStatusIllu = () => {
       }
       if(allMonthlyHistory[0] !== null) {setCardData(allMonthlyHistory[0].monthlyAmount);}
       else {setCardData('0');}
+      gotUsers = allMonthlyHistory[3];
+      props.transUser(gotUsers);
    } 
     setChartData(iniChartData);
   }, [allMonthlyHistory])

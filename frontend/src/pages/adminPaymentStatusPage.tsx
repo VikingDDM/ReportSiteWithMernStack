@@ -8,14 +8,12 @@ import Typography from '@mui/material/Typography';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { styled } from '@mui/material/styles';
 import Modal from '@mui/material/Modal';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { object, string, TypeOf } from 'zod';
 import { useCreatePayHistoryMutation } from '../redux/api/paymentApi';
 import { toast } from 'react-toastify';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import AdminPaymentStatusTable from '../components/adminPaymentStatusTable';
 import AdminPaymentStatusIllu from '../components/adminPaymentStatusIllu';
@@ -48,9 +46,9 @@ const style = {
 };
 
 const createPayHistorySchema = object({
-    name: string(),
+    name: string().min(1, 'Name is required'),
     paymentWay: string(),
-    amount: string(),
+    amount: string().min(1, 'Name is required'),
 })
 
 export type ICreatePayHistory = TypeOf<typeof createPayHistorySchema>;
@@ -59,10 +57,11 @@ const AdminPaymentStatusPage = () => {
     // model action section
     const [modelShow, setModelShow] = useState(false);
     const modelHandleShow = () => setModelShow(true);
-    const [age, setAge] = React.useState('');
+    const [nameSelect, setNameSelect] = React.useState('');
+    const [usersForSelect, setUsersForSelect] = React.useState([]);
 
-    const handleChange = (event: SelectChangeEvent) => {
-      setAge(event.target.value as string);
+    const handleNameSelectChange = (event: SelectChangeEvent) => {
+      setNameSelect(event.target.value as string);
     };
 
     const handleClose = () => {
@@ -84,6 +83,10 @@ const AdminPaymentStatusPage = () => {
       setValue,
       formState: { isSubmitting },
     } = methods;
+    register('name', {
+      onChange: handleNameSelectChange,
+    });
+    
 
     const [createPayHistory, { isLoading, isError, error, isSuccess }] =
     useCreatePayHistoryMutation();
@@ -128,7 +131,7 @@ const AdminPaymentStatusPage = () => {
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Status This Month</h5>
-          <AdminPaymentStatusIllu />
+          <AdminPaymentStatusIllu transUser={(users :any ) => setUsersForSelect(users)}/>
           <LoadingButton onClick={modelHandleShow}>
             Add
           </LoadingButton>
@@ -144,28 +147,22 @@ const AdminPaymentStatusPage = () => {
               <Box sx={{ width: '100%' }}>
                  <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
-                        <Paper style={{boxShadow:"none"}}>
-                                  
+                        <Paper style={{boxShadow:"none"}}>          
                           <p style={{margin:"unset", color:"gray"}}>Name</p>
-                          <TextField
-                            fullWidth 
-                            rows={2}
-                            multiline
-                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('name')}
-                          />  
-                          {/* <Select
+                          <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={age}
+                            value={nameSelect}
                             fullWidth
-                            onChange={handleChange}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('name')}
                           >
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
-                          </Select> */}
+                            {usersForSelect.map((userForSelect : any, key: any) => {
+                              return(
+                                <MenuItem key = {key} value={userForSelect.name}>{userForSelect.name}</MenuItem>
+                              )
+                            })}
+                          </Select>
                           <p style={{margin:"unset", color:"gray"}}>Payment Mothod</p>
                           <TextField
                             fullWidth 
@@ -174,11 +171,11 @@ const AdminPaymentStatusPage = () => {
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('paymentWay')}
                           />
-                          <p style={{margin:"unset", color:"gray"}}>Amount</p>
+                          <p style={{margin:"unset", color:"gray"}}>Amount($)</p>
                           <TextField
-                            fullWidth 
-                            rows={2}
-                            multiline
+                            id="outlined-number"
+                            fullWidth
+                            type="number"
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('amount')}
                           />
