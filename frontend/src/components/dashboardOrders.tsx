@@ -1,74 +1,88 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import DashboardChartTitle from './dashboardChartTitle';
+import { useGetYearlyAllQuery } from '../redux/api/paymentApi';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import FullScreenLoader from './fullScreenLoader';
 
 // Generate Order Data
 function createData(
-  id: number,
-  date: string,
-  name: string,
-  paymentMethod: string,
-  amount: number,
+  id: any,
+  date: any,
+  name: any,
+  paymentMethod: any,
+  amount: any,
 ) {
   return { id, date, name, paymentMethod, amount };
 }
 
-const rows = [
-  createData(
-    0,
-    '23 Mar, 2023',
-    'Oscar Dam',
-    'Paypal',
-    3000,
-  ),
-  createData(
-    1,
-    '23 Mar, 2023',
-    'Oscar Dam',
-    'Paypal',
-    5000,
-  ),
-  createData(2, '16 Mar, 2019', 'John Doe', 'Payoneer', 100),
-  createData(
-    3,
-    '22 Mar, 2023',
-    'Oscar Dam',
-    'Payoneer',
-    500,
-  ),
-  createData(
-    4,
-    '15 Mar, 2023',
-    'Oscar Dam',
-    'Paypal',
-    2000,
-  ),
-];
+
 
 function preventDefault(event: React.MouseEvent) {
   event.preventDefault();
 }
 
-export default function DaxhboardOrders() {
+export default function DashboardOrders() {
+  const [rows, setRows] = React.useState([]);
+  const { isLoading, isError, error, data: allYearlyHistory } = useGetYearlyAllQuery();
+
+  useEffect(() => {
+    let recentPays : any = [];
+    if(allYearlyHistory !== undefined){
+      allYearlyHistory[2].map((recentData:any) => {
+        recentPays.push(
+          createData(
+            recentData.id,
+            recentData.created_at,
+            recentData.name,
+            recentData.paymentWay,
+            recentData.amount,
+          )
+        )
+      })
+    }
+    setRows(recentPays);
+  },[allYearlyHistory])
+ 
+  useEffect(() => {
+    if (isError) {
+      if (Array.isArray((error as any)?.data?.error)) {
+        (error as any).data.error.forEach((el: any) =>
+          toast.error(el.message, {
+            position: 'top-right',
+          })
+        );
+      } else {
+        toast.error((error as any)?.data?.message, {
+          position: 'top-right',
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
   return (
     <React.Fragment>
-      <DashboardChartTitle>Recent Orders</DashboardChartTitle>
+      <DashboardChartTitle>Recent Incomes</DashboardChartTitle>
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Payment Method</TableCell>
-            <TableCell align="right">Pay Amount</TableCell>
+            <TableCell><b>Date</b></TableCell>
+            <TableCell><b>Name</b></TableCell>
+            <TableCell><b>Payment Method</b></TableCell>
+            <TableCell align="right"><b>Pay Amount</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows.map((row : any) => (
             <TableRow key={row.id}>
               <TableCell>{row.date}</TableCell>
               <TableCell>{row.name}</TableCell>
@@ -78,9 +92,6 @@ export default function DaxhboardOrders() {
           ))}
         </TableBody>
       </Table>
-      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more orders
-      </Link> */}
     </React.Fragment>
   );
 }

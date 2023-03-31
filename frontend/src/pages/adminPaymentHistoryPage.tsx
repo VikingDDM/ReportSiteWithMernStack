@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { Container } from "@mui/system";
 import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
-import FullScreenLoader from '../components/fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
@@ -23,13 +21,17 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import TableHead from '@mui/material/TableHead';
 import { styled } from '@mui/material/styles';
-import { useGetMonthlyPayHistoryQuery } from '../redux/api/paymentApi';
 import AdminPaymentStatusEditModal from '../components/adminPaymentStatusEditModal';
 import Button from '@mui/material/Button';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { allPaymentHistory } from '../redux/selectors/paymentSelector';
+import { useAppDispatch ,useAppSelector } from '../redux/hooks';
+import { paymentApi } from '../redux/api/paymentApi';
+import { Dayjs } from 'dayjs';
+import AdminAllPayHistoryIllu from '../components/adminAllPayHistoryIllu'
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -110,7 +112,12 @@ return (
 }
 
 const AdminPaymentHistoryPage = () => {
-  const { isLoading, isError, error, data: payHistory } = useGetMonthlyPayHistoryQuery();
+  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null);
+  const dispatch:any = useAppDispatch();
+  const payHistory = useAppSelector(allPaymentHistory);
+
+  const[tableData,setTableData] = React.useState([]);
+  
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [dataid, setDataid] = React.useState("");
@@ -119,7 +126,7 @@ const AdminPaymentHistoryPage = () => {
   const [dataAmount, setDataAmount] = React.useState("");
   const [show, setShow] = React.useState(false);
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - payHistory?.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableData?.length) : 0;
   const handleShow = (data: any) => {setShow(true); 
                                      setDataid(data._id); 
                                      setDataName(data.name);
@@ -140,52 +147,54 @@ const AdminPaymentHistoryPage = () => {
     setPage(0);
   };
   useEffect(() => {
-      if (isError) {
-        if (Array.isArray((error as any)?.data?.error)) {
-          (error as any).data.error.forEach((el: any) =>
-            toast.error(el.message, {
-              position: 'top-right',
-            })
-          );
-        } else {
-          toast.error((error as any)?.data?.message, {
-            position: 'top-right',
-          });
-        }
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading]);
-  
-    if (isLoading) {
-      return <FullScreenLoader />;
+    if(payHistory.length !== 0){
+      if(payHistory[4] !== null){setTableData(payHistory[4])}
     }
-
+  },[payHistory])
+  
+  useEffect(() => {
+    let submitDate = '';
+    if(dateValue !== null){
+       submitDate = (dateValue.toDate()).toISOString(); 
+       console.log(submitDate)
+       dispatch(paymentApi.endpoints.getAllHistory.initiate(submitDate));}
+    }, [dateValue]);
+ 
     return(
         <Container>
-          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment History</h5>
+          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment History </h5>
+          <AdminAllPayHistoryIllu />
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
-              <DatePicker label={'"month" and "year"'} views={['month', 'year']} />
+              <DatePicker label={'"month" and "year"'} 
+                          views={['month', 'year']} 
+                          value={dateValue} 
+                          defaultValue ={dateValue}
+                          onChange={(newValue) => {setDateValue(newValue);}}
+              />
             </DemoContainer>
           </LocalizationProvider>
           <TableContainer component={Paper} style={{marginTop:"30px"}} >
             <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
               <TableHead>
                 <TableRow>
+                  <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Name</StyledTableCell>
                   <StyledTableCell align="center">Payment Method</StyledTableCell>
                   <StyledTableCell align="center">Amount</StyledTableCell>
-                  <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
-                  ? payHistory?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : payHistory
+                  ? tableData?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : tableData
                 )?.map((row:any, key: any) => (
                   <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                     <StyledTableCell component="th" scope="row">
+                      {row?.created_at}
+                    </StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
                       {row.name}
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
@@ -193,9 +202,6 @@ const AdminPaymentHistoryPage = () => {
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
                       {row?.amount}
-                    </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                      {row?.created_at}
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="center">
                       <Button onClick={() => handleShow(row)} >
@@ -217,7 +223,7 @@ const AdminPaymentHistoryPage = () => {
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                     colSpan={7}
-                    count={payHistory?.length}
+                    count={tableData?.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     SelectProps={{

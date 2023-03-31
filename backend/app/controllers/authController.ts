@@ -12,18 +12,18 @@ export const excludedFields = ['password'];
 // Cookie options
 const accessTokenCookieOptions: CookieOptions = {
   expires: new Date(
-    Date.now() + config.get<number>('accessTokenExpiresIn') * 60 * 1000 * 24
+    Date.now() + config.get<number>('accessTokenExpiresIn') * 60 * 1000
   ),
-  maxAge: config.get<number>('accessTokenExpiresIn') * 60 * 1000 * 24,
+  maxAge: config.get<number>('accessTokenExpiresIn') * 60 * 1000 ,
   httpOnly: true,
   sameSite: 'lax',
 };
 
 const refreshTokenCookieOptions: CookieOptions = {
   expires: new Date(
-    Date.now() + config.get<number>('refreshTokenExpiresIn') * 60 * 1000 * 24
+    Date.now() + config.get<number>('refreshTokenExpiresIn') * 60 * 1000 
   ),
-  maxAge: config.get<number>('refreshTokenExpiresIn') * 60 * 1000 * 24,
+  maxAge: config.get<number>('refreshTokenExpiresIn') * 60 * 1000 ,
   httpOnly: true,
   sameSite: 'lax',
 };

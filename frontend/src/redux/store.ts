@@ -11,8 +11,9 @@ import { paymentApi } from './api/paymentApi';
 import userReducer from './features/userSlice';
 import sidebarActionReducer from "./features/sidebarActionSlice";
 import reportReducer from './features/reportSlice';
+import payHistoryReducer from './features/paymentSlice';
 
-export const store = configureStore({
+export const store:any = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
@@ -26,6 +27,7 @@ export const store = configureStore({
     userState: userReducer,
     sidebarState: sidebarActionReducer,
     reportState: reportReducer,
+    payHistoryState: payHistoryReducer,
   },
   devTools: process.env.NODE_ENV === 'development',
   middleware: (getDefaultMiddleware) =>

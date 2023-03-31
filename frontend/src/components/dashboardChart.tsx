@@ -1,17 +1,58 @@
-import * as React from 'react';
+import React, { FunctionComponent } from "react";
 import { useTheme } from '@mui/material/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { LineChart,
+         Line,
+         XAxis,
+         YAxis,
+         CartesianGrid,
+         Tooltip,
+         Legend,
+         LabelList,
+         ResponsiveContainer } from 'recharts';
 import DashboardChartTitle from './dashboardChartTitle';
+import { useGetYearlyAllQuery } from '../redux/api/paymentApi';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import FullScreenLoader from './fullScreenLoader';
 
 // Generate Sales Data
 function createData(time: string, amount?: number) {
   return { time, amount };
 }
 
+const CustomizedLabel: FunctionComponent<any> = (props: any) => {
+  const { x, y, stroke, value } = props;
+
+  return (
+    <text x={x} y={y} dy={-4} fill={stroke} fontSize={10} textAnchor="middle">
+      {value}
+    </text>
+  );
+};
+
+const CustomizedAxisTick: FunctionComponent<any> = (props: any) => {
+  const { x, y, payload } = props;
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={10}
+        textAnchor="end"
+        fill="#666"
+        transform="rotate(0)"
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
+};
+
 const data = [
-  createData('Jan', 5000),
-  createData('Feb', 12000),
-  createData('Mar', 15000),
+  createData('Jan', undefined),
+  createData('Feb', undefined),
+  createData('Mar', undefined),
   createData('Apr', undefined),
   createData('May', undefined),
   createData('Jun', undefined),
@@ -22,51 +63,65 @@ const data = [
   createData('Nov', undefined),
   createData('Dec', undefined),
 ];
+const months = ['Jan','Feb','Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export default function DashboardChart() {
   const theme = useTheme();
 
+  const { isLoading, isError, error, data: allYearlyHistory } = useGetYearlyAllQuery();
+
+  useEffect(() => {
+    if(allYearlyHistory !== undefined){
+      allYearlyHistory[1].map((value:any,key:any) => {
+        data[key] = createData(months[key], parseInt(value))
+      })
+    }
+  },[allYearlyHistory])
+
+  useEffect(() => {
+    if (isError) {
+      if (Array.isArray((error as any)?.data?.error)) {
+        (error as any).data.error.forEach((el: any) =>
+          toast.error(el.message, {
+            position: 'top-right',
+          })
+        );
+      } else {
+        toast.error((error as any)?.data?.message, {
+          position: 'top-right',
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <React.Fragment>
-      <DashboardChartTitle>This Month</DashboardChartTitle>
-      <ResponsiveContainer>
+      <DashboardChartTitle>{"Total Income This Year (" + (new Date().getFullYear()).toString() + ")"}</DashboardChartTitle>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart
+          width={500}
+          height={300}
           data={data}
           margin={{
-            top: 16,
-            right: 16,
-            bottom: 0,
-            left: 24,
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 10
           }}
         >
-          <XAxis
-            dataKey="time"
-            stroke={theme.palette.text.secondary}
-            style={theme.typography.body2}
-          />
-          <YAxis
-            stroke={theme.palette.text.secondary}
-            style={theme.typography.body2}
-          >
-            <Label
-              angle={270}
-              position="left"
-              style={{
-                textAnchor: 'middle',
-                fill: theme.palette.text.primary,
-                ...theme.typography.body1,
-              }}
-            >
-              Payment ($)
-            </Label>
-          </YAxis>
-          <Line
-            isAnimationActive={false}
-            type="monotone"
-            dataKey="amount"
-            stroke={theme.palette.primary.main}
-            dot={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" height={20} tick={<CustomizedAxisTick />} />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="amount" stroke="#8884d8">
+            <LabelList content={<CustomizedLabel />} />
+          </Line>
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>

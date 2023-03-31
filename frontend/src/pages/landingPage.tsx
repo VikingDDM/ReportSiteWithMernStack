@@ -1,11 +1,10 @@
 import { Container } from "@mui/system"
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import DashboardChart from "../components/dashboardChart";
 import DashboardDeposits from "../components/dashboardDeposits";
-import DaxhboardOrders from "../components/dashboardOrders";
+import DashboardOrders from "../components/dashboardOrders";
 
 const LandingPage = () => {
     return(
@@ -20,7 +19,7 @@ const LandingPage = () => {
                 flexGrow: 1,
               }}
             >
-              <Toolbar />
+              <h5 style={{fontSize:"40px", color:"grey", marginBottom:"unset", marginTop:"30px"}}>Welcome To Our Team!</h5>
               <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                 <Grid container spacing={3}>
                   {/* Chart */}
@@ -30,7 +29,7 @@ const LandingPage = () => {
                         p: 2,
                         display: 'flex',
                         flexDirection: 'column',
-                        height: 240,
+                        height: 400,
                       }}
                     >
                       <DashboardChart />
@@ -38,21 +37,12 @@ const LandingPage = () => {
                   </Grid>
                   {/* Recent Deposits */}
                   <Grid item xs={12} md={4} lg={3}>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: 240,
-                      }}
-                    >
                       <DashboardDeposits />
-                    </Paper>
                   </Grid>
                   {/* Recent Orders */}
                   <Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                      <DaxhboardOrders />
+                      <DashboardOrders />
                     </Paper>
                   </Grid>
                 </Grid>

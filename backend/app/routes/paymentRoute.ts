@@ -7,6 +7,8 @@ import { createPayPlanHandler,
          updatePaymentHistoryHandler, 
          getPayPlanHandler,
          getAllMonthlyPaymentHandler,
+         getAllYearlyPaymentHandler,
+         getAllPaymentHistoryHandler,
          deletePaymentHandler} from "../controllers/paymentController";
 import { validate } from "../middleware/validate";
 import { deserializeUser } from "../middleware/deserializeUser";
@@ -15,7 +17,8 @@ import { createPayPlanSchema,
          createPayHistorySchema, 
          updatePayHistorySchema,
          updatePayPlanSchema,
-         deletePaymentSchema} from "../schemas/paymentSchema";
+         deletePaymentSchema,
+         getAllPayHistorySchema} from "../schemas/paymentSchema";
 
 const router = express.Router();
 
@@ -62,5 +65,11 @@ router
 router
   .route("/:paymentId")
   .delete(validate(deletePaymentSchema), deletePaymentHandler);
+router
+  .route("/allHistory/:paymentId")
+  .get(validate(getAllPayHistorySchema), getAllPaymentHistoryHandler)
+router
+  .route("/yearlyall")
+  .get(getAllYearlyPaymentHandler);
 
   export default router;

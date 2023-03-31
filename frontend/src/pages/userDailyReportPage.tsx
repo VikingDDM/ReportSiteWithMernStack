@@ -48,7 +48,7 @@ const style = {
     p: 4,
   };
 
-const steps = ['How much did you pay today?', 'How is your project going?', 'What did you study about?', 'Anythng else?'];
+const steps = ['How much income?', 'How is your project going?', 'What did you study about?', 'Anythng else?'];
 // const reportTags = ['Payment','Project','Study','Extra'];
 
 const createReportSchema = object({

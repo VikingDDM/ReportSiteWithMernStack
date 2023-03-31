@@ -4,6 +4,7 @@ import { ICreatePayHistory } from '../../pages/adminPaymentStatusPage';
 import { IUpdatePayHistory } from '../../components/adminPaymentStatusEditModal';
 import { ICreatePayPlan } from '../../pages/userPaymentPlanPage'
 import { IUpdatePayPlan } from '../../components/userPayPlanEditModal'
+import { getAllPayHistory } from '../features/paymentSlice';
 
 export const paymentApi = createApi({
   reducerPath: 'paymentApi',
@@ -120,19 +121,38 @@ export const paymentApi = createApi({
           credentials: 'include',
         };
       },
-      // providesTags: (result) =>
-      //   result
-      //     ? [
-      //         ...result.map(({ id }: any) => ({
-      //           type: 'Payment' as const,
-      //           id,
-      //         })),
-      //         { type: 'Payment', id: 'LIST' },
-      //       ]
-      //     : [{ type: 'Payment', id: 'LIST' }],
       transformResponse: (results: { data: { payment: any} }) =>
         results?.data.payment,
    }),
+
+   getYearlyAll: builder.query<any, void>({
+    query() {
+      return {
+        url: `/payment/yearlyall`,
+        credentials: 'include',
+      };
+    },
+    transformResponse: (results: { data: { payment: any} }) =>
+      results?.data.payment,
+ }),
+
+   getAllHistory: builder.query<any, string>({
+    query(date) {
+      return {
+        url: `/payment/allHistory/${date}`,
+        credentials: 'include',
+      };
+    },
+    transformResponse: (results: { data: { payment: any} }) =>
+      results?.data.payment,
+    async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      try {
+        const { data } = await queryFulfilled;
+        dispatch(getAllPayHistory(data));
+        
+      } catch (error) {}
+    },
+}),
 
     updatePayHistory: builder.mutation<any, { id: string; payment: IUpdatePayHistory; }>(
       {
@@ -155,7 +175,7 @@ export const paymentApi = createApi({
           response.data.payment,
       }
     ),  
-    deletePayment: builder.mutation<any, string>({
+    deletePayment: builder.mutation<any, string | null>({
       query(id) {
         return {
           url: `/payment/${id}`,
@@ -178,4 +198,6 @@ export const {
   useDeletePaymentMutation,
   useDeletePayPlanMutation,
   useGetMonthlyAllQuery,
+  useGetYearlyAllQuery,
+  useGetAllHistoryQuery,
 } = paymentApi;

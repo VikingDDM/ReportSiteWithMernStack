@@ -3,13 +3,15 @@ import { Container } from '@mui/system';
 import FullScreenLoader from './fullScreenLoader';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,ResponsiveContainer } from 'recharts';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useGetMonthlyAllQuery } from '../redux/api/paymentApi';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 
 export interface ChildProps{
   transUser: (users: any) => void
@@ -79,46 +81,79 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
   }
 
     return(
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4, display:"flex" }}>
-            <Grid item xs={12} md={8} lg={9}>
-              <BarChart
-                width={700}
-                height={300}
-                data={chartData}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="income" fill="#8884d8" background={{ fill: '#eee' }} />
-                <Bar dataKey="plan" fill="#82ca9d" />
-              </BarChart>
-            </Grid>
-            <Grid item xs={12} md={4} lg={3}>
-              <Card sx={{  display: 'flex', flexDirection: 'column', width: 270 }}>
-                <CardMedia
-                  sx={{ height: 140 }}
-                  image='/monthlyPay.jpg'
-                  title="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Total Amount
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
-                    {cardData}$
-                  </Typography>
-                </CardContent>
-              </Card>
+      <Container>
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+          }}
+        >
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height:300,
+                  }}
+                  style={{backgroundColor:"transparent"}}
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                    width={400}
+                    height={300}
+                    data={chartData}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="income" fill="#8884d8" background={{ fill: '#eee' }} />
+                      <Bar dataKey="plan" fill="#82ca9d" />
+                    </BarChart> 
+                  </ResponsiveContainer>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={4} lg={3}>    
+                <Card sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: 300,
+                }}>
+                  <CardMedia
+                    sx={{ height: 140 }}
+                    image='/monthlyPay.jpg'
+                    title="green iguana"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      Total Amount
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
+                      {new Date().toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
+                      {cardData}$
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
           </Container>
+        </Box>
+      </Container>
     )
 }
 
