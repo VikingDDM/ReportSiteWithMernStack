@@ -88,10 +88,11 @@ const LandingPageSidebar = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-around',
             px: [1],
           }}
         >
+          <img src='/logo.png' width={90} height={40} style={{float:"right"}}></img>
         </Toolbar>
         <Divider />
         <List component="nav" style={{overflow:"auto", height:"600px"}}>

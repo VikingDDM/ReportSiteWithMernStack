@@ -70,6 +70,7 @@ export type ICreateReportWithUser = TypeOf<typeof createReportWithUserSchema>;
 export type ICreateReport = TypeOf<typeof createReportSchema>;
 
 const UserDailyReportPage = () => {
+    const [buttonAtive, setButtonActive] = React.useState('')
     const reportUser = useAppSelector(user);
 
 // model action section
@@ -201,7 +202,7 @@ const UserDailyReportPage = () => {
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Please report in a few minutes</h5>
-          <LoadingButton onClick={modelHandleShow}>
+          <LoadingButton onClick={modelHandleShow} style={{display:buttonAtive}}>
             Report
           </LoadingButton>
           <Modal
@@ -337,7 +338,7 @@ const UserDailyReportPage = () => {
               </Box>
             </Box>
           </Modal>
-          <UserDailyReportTable />
+          <UserDailyReportTable setBtnAble={(btnAble:string) => setButtonActive(btnAble)}/>
         </Container>
     )
 }

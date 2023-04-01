@@ -70,7 +70,7 @@ function createData(time: string, amount?: number) {
   const months = ['Jan','Feb','Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   // PinChart
-  const pinChartdata:any = [];
+  const pinChartdata:any = [{name:"no name", value:100}];
   const renderActiveShape = (props:any) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -124,7 +124,7 @@ const AdminAllPayHistoryIllu = () => {
     const theme = useTheme();
     const payHistory = useAppSelector(allPaymentHistory);
     const [barChartData, setBarChartData] = useState([]);
-    const [totalAmount, setTotalAmount] = useState("");
+    const [totalAmount, setTotalAmount] = useState("0");
 
     // EachMonthTotalChart
     useEffect(() => {

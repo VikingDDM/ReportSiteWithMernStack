@@ -14,6 +14,7 @@ import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -101,9 +102,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-const UserWeeklyReportPage = () => {
+const AdminReportStatusPage = () => {
 
     const { isLoading, isError, error, data: reportsWithUsers } = useGetWeeklyReportStatusQuery();
+    const [reportStatus, setReportStatus] = React.useState([]);
  
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -123,6 +125,26 @@ const UserWeeklyReportPage = () => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
+
+    useEffect(() => {
+      if(reportsWithUsers !== undefined){
+        let reportStatusArray:any = [];
+        let unreportNum = "";
+        reportsWithUsers[1].map((userVal:any)=>{
+          const eachReports = reportsWithUsers[0].filter((reportVal:any) => {
+            return reportVal.Username === userVal.name;
+          })
+          if(eachReports === undefined){
+            unreportNum = "6";
+          } else{
+            unreportNum = (6 - eachReports.length).toString();
+          }
+          reportStatusArray.push({name:userVal.name, time:unreportNum})
+        })
+        setReportStatus(reportStatusArray);
+        console.log(reportStatus)
+      }
+    },[reportsWithUsers])
 
     useEffect(() => {
         if (isError) {
@@ -147,7 +169,20 @@ const UserWeeklyReportPage = () => {
     
     return (
         <Container>
-           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>You haven't reported times </h5>
+           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Weekly Report Status </h5>
+           <Grid item xs={12} >
+              <Paper
+                sx={{
+                  p: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {reportStatus.map((eachVal:any,key:any) => (
+                  <h5 key={key} style={{fontSize:"15px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>{eachVal.name} haven't reported {eachVal.time} times, this week</h5>
+                ))}
+              </Paper>
+            </Grid>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
                   <TableHead>
@@ -220,4 +255,4 @@ const UserWeeklyReportPage = () => {
     
 }
 
-export default UserWeeklyReportPage;
+export default AdminReportStatusPage;

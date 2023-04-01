@@ -32,6 +32,13 @@ export const findUser = async (
   return await userModel.findOne(query, {}, options).select('+password');
 };
 
+export const findUsers = async (
+  query: FilterQuery<User>,
+  options: QueryOptions = {}
+) => {
+  return await userModel.find(query, {}, options);
+};
+
 // Sign Token
 export const signToken = async (user: DocumentType<User>) => {
 

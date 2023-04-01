@@ -1,6 +1,6 @@
 import { Container } from "@mui/system"
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -101,9 +101,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-const UserWeeklyReportPage = () => {
+const AdminDailyReportPage = () => {
 
     const { isLoading, isError, error, data: reportsWithUsers } = useGetDailyReportStatusQuery();
+    const [unreportedNames, setUnreportedNames] = useState([])
  
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -123,6 +124,21 @@ const UserWeeklyReportPage = () => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
+
+    useEffect(() => {
+      if(reportsWithUsers !== undefined) {
+        let unreportedUserList:any = []
+        reportsWithUsers[1].map((userValue:any) => {
+          const unreportFilter = reportsWithUsers[0].find((reportValue:any) => {
+            return reportValue.Username === userValue.name
+          })
+          if(unreportFilter === undefined) {
+            unreportedUserList.push(userValue.name);
+          }
+        })
+        setUnreportedNames(unreportedUserList);
+      }
+    },[reportsWithUsers])
 
     useEffect(() => {
         if (isError) {
@@ -147,7 +163,8 @@ const UserWeeklyReportPage = () => {
     
     return (
         <Container>
-           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>You haven't reported times </h5>
+           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Today's Roports</h5>
+           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported today </h5>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
                   <TableHead>
@@ -220,4 +237,4 @@ const UserWeeklyReportPage = () => {
     
 }
 
-export default UserWeeklyReportPage;
+export default AdminDailyReportPage;

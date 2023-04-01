@@ -10,7 +10,7 @@ import {
   findOneAndDelete,
   findReports,
 } from "../services/reportService";
-import { findUserById, findAllUsers } from "../services/userService";
+import { findUserById, findAllUsers, findUsers } from "../services/userService";
 import AppError from "../utils/appError";
 
 export const createReportHandler = async (
@@ -92,10 +92,12 @@ export const getDailyReportStatusHandler = async (
     const query = {
       created_at: { $gte: today, $lte: tomorrow }
     }
-
+    const userquery = {
+      role: {$eq:'user'}
+    }
     const reports = await findReports(query);
-    const users = await findAllUsers();
-      const reportsWithUsers = [reports, users];
+    const users = await findUsers(userquery);
+    const reportsWithUsers = [reports, users];
     
     res.status(200).json({
       status: "success",
@@ -133,13 +135,14 @@ export const getUserWeeklyReportsHandler = async (
       millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * weeklyDay;
     }
     
-    const millisecondBefore = millisecondAfter + 86400000 * 4;
+    const millisecondBefore = millisecondAfter + 86400000 * 6;
 
-    weeklyFirstDay.setTime(millisecondAfter);
+    weeklyFirstDay.setTime(millisecondAfter + 86400000);
     weeklyLastDay.setTime(millisecondBefore);
     weeklyFirstDay.setHours(-7); weeklyFirstDay.setMinutes(0);
     weeklyLastDay.setHours(16); weeklyLastDay.setMinutes(59);
-
+    console.log(weeklyFirstDay)
+    console.log(weeklyLastDay)
     const query = {
       user: { $eq: res.locals.user._id },
       created_at: { $gte: weeklyFirstDay, $lte: weeklyLastDay }
@@ -233,9 +236,9 @@ export const getWeeklyReportStatusHandler = async (
       millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * weeklyDay;
     }
     
-    const millisecondBefore = millisecondAfter + 86400000 * 4;
+    const millisecondBefore = millisecondAfter + 86400000 * 6;
 
-    weeklyFirstDay.setTime(millisecondAfter);
+    weeklyFirstDay.setTime(millisecondAfter + 86400000);
     weeklyLastDay.setTime(millisecondBefore);
     weeklyFirstDay.setHours(-7); weeklyFirstDay.setMinutes(0);
     weeklyLastDay.setHours(16); weeklyLastDay.setMinutes(59);
@@ -243,9 +246,12 @@ export const getWeeklyReportStatusHandler = async (
     const query = {
       created_at: { $gte: weeklyFirstDay, $lte: weeklyLastDay }
     }
+    const userquery = {
+      role: {$eq:'user'}
+    }
     
     const reports = await findReports(query);
-    const users = await findAllUsers();
+    const users = await findUsers(userquery);
     const reportsWithUsers = [reports, users];
     
     res.status(200).json({

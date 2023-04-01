@@ -5,28 +5,15 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { useSignoutUserMutation } from '../redux/api/authApi';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { sidebaropening } from '../redux/features/sidebarActionSlice';
 import { sidebaropen } from '../redux/selectors/sidebarActionSelector';
-
-const LoadingButton = styled(_LoadingButton)`
-  padding: 0.4rem;
-  color: silver;
-  font-weight: 500;
-  border: 2px solid #222;
-  margin-right: 1rem;
-  background-color: transparent;
-  border-radius: unset;
-  border-color: silver;
-  width: 100px;
-  &:hover {
-    color: black;
-    border-color: black;
-  }
-`;
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -53,6 +40,15 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const LandingPageHeader = () => {
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const [logoutUser, { isLoading, isSuccess, error, isError }] =
     useSignoutUserMutation();
@@ -130,12 +126,28 @@ const LandingPageHeader = () => {
           noWrap
           sx={{ flexGrow: 1 }}
         >
-          Dashboard
+          
         </Typography>
-        <LoadingButton onClick={onLogoutHandler} loading={isLoading}>
-           Signout
-        </LoadingButton>
-        
+        <Button
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+        >
+          <PersonOutlineIcon  style={{color:"white", fontSize:"40"}}/>
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem onClick={onLogoutHandler}>Signout</MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   )

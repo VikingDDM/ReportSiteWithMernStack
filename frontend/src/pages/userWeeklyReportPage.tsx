@@ -105,6 +105,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 const UserWeeklyReportPage = () => {
 
     const { isLoading, isError, error, data: userWeeklyReports } = useGetUserWeeklyReportsQuery();
+    const [reportTime, setReportTime] = React.useState(6)
+
+    useEffect(() => {
+      if(userWeeklyReports !== undefined) {
+        setReportTime(6-userWeeklyReports[0].length)
+      }
+    },[userWeeklyReports])
     
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -151,7 +158,7 @@ const UserWeeklyReportPage = () => {
 
     return (
         <Container>
-           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>You haven't reported times </h5>
+           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>You haven't reported {reportTime} times, this week</h5>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
                   <TableHead>
