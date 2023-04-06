@@ -40,7 +40,7 @@ const AdminPaymentStatusDeleteButton = ({ payment_id} : IAdminPaymentStatusDelet
     };
 
     return (
-        <Button onClick={() => {onDeleteHandler()}}>
+        <Button style={{minWidth:"unset"}} onClick={() => {onDeleteHandler()}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

@@ -25,6 +25,7 @@ import { styled } from '@mui/material/styles';
 import { useGetMonthlyPayHistoryQuery } from '../redux/api/paymentApi';
 import AdminPaymentStatusEditModal from './adminPaymentStatusEditModal';
 import Button from '@mui/material/Button';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -106,21 +107,76 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
    
 function AdminPaymentStatusTable() {
-   
+  
     const { isLoading, isError, error, data: payHistory } = useGetMonthlyPayHistoryQuery();
     const [monthlyPay, setMonthlyPay] = useState([]);
     const [selectingUsers, setSelectingUsers] = useState([]);
+    const [dateSort, setDateSort] = useState(false);
+    const [realAmountSort, setRealAmountSort] = useState(false);
+    const [amountSort, setAmountSort] = useState(false);
+  
+    useEffect(() => {
+    let monthlyPays :any = [];
+    let selUsers: any = [];
+    if(payHistory !== undefined){ 
+      payHistory[0].map((value :any) => {
+        monthlyPays.push(value);
+      })
+      if(dateSort){
+        monthlyPays.sort((p1: any, p2:any) => {
+          if (p1.created_at > p2.created_at) return -1;
+          if (p1.created_at < p2.created_at) return 1;
+          return 0;
+        });
+      } else {
+        monthlyPays.sort((p1: any, p2:any) => {
+          if (p1.created_at < p2.created_at) return -1;
+          if (p1.created_at > p2.created_at) return 1;
+          return 0;
+        });
+      }
+        selUsers = payHistory[1];
+    }
+      setMonthlyPay(monthlyPays);
+      setSelectingUsers(selUsers);
+    },[payHistory, dateSort])
 
     useEffect(() => {
-      let monthlyPays :any = [];
-      let selUesrs: any = [];
-      if(payHistory !== undefined){
-        monthlyPays = payHistory[0];
-        selUesrs = payHistory[1];
+      if(monthlyPay.length !== 0) {
+        if(realAmountSort){
+          monthlyPay.sort((p1: any, p2:any) => {
+            if (p1.realAmount > p2.realAmount) return -1;
+            if (p1.realAmount < p2.realAmount) return 1;
+            return 0;
+          });
+        } else {
+          monthlyPay.sort((p1: any, p2:any) => {
+            if (p1.realAmount < p2.realAmount) return -1;
+            if (p1.realAmount > p2.realAmount) return 1;
+            return 0;
+          });
+        }
       }
-      setMonthlyPay(monthlyPays);
-      setSelectingUsers(selUesrs);
-    },[payHistory])
+    },[realAmountSort])
+
+    useEffect(() => {
+      if(monthlyPay.length !== 0) {
+        if(amountSort){
+          monthlyPay.sort((p1: any, p2:any) => {
+            if (p1.amount > p2.amount) return -1;
+            if (p1.amount < p2.amount) return 1;
+            return 0;
+          });
+        } else {
+          monthlyPay.sort((p1: any, p2:any) => {
+            if (p1.amount < p2.amount) return -1;
+            if (p1.amount > p2.amount) return 1;
+            return 0;
+          });
+        }
+      }
+    },[amountSort])
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [dataid, setDataid] = React.useState("");
@@ -152,7 +208,8 @@ function AdminPaymentStatusTable() {
     ) => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
-    };
+    }; 
+
 
     useEffect(() => {
         if (isError) {
@@ -171,28 +228,37 @@ function AdminPaymentStatusTable() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [isLoading]);
     
-      if (isLoading) {
-        return <FullScreenLoader />;
-      }
+    if (isLoading) {
+      return <FullScreenLoader />;
+    }
    
     return (
       <TableContainer component={Paper} style={{marginTop:"30px", marginBottom:"30px"}} >
         <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
           <TableHead>
             <TableRow>
-              <StyledTableCell align="center">Date</StyledTableCell>
+              <StyledTableCell align="left">
+                <Button style={{color:"grey",border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setDateSort(!dateSort)}><ImportExportIcon /></Button>
+                Date
+              </StyledTableCell>
               <StyledTableCell align="center">Name</StyledTableCell>
               <StyledTableCell align="center">Payment Method</StyledTableCell>
               <StyledTableCell align="center">Rate</StyledTableCell>
-              <StyledTableCell align="center">Real Amount</StyledTableCell>
-              <StyledTableCell align="center">Rusult Amount</StyledTableCell>
+              <StyledTableCell align="left">
+                <Button style={{color:"grey", border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setRealAmountSort(!realAmountSort)}><ImportExportIcon /></Button>
+                Real Amount
+              </StyledTableCell>
+              <StyledTableCell align="left">
+                <Button style={{color:"grey", border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setAmountSort(!amountSort)}><ImportExportIcon /></Button>
+                Rusult Amount
+              </StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {(rowsPerPage > 0
               ? monthlyPay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : monthlyPay            )?.map((row:any, key: any) => (
+              : monthlyPay)?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                 <StyledTableCell component="th" scope="row">
                   {row?.created_at}
@@ -212,8 +278,8 @@ function AdminPaymentStatusTable() {
                 <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
                   {row?.amount}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}}align="center">
-                  <Button onClick={() => handleShow(row)} >
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}}align="left">
+                  <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   

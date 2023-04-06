@@ -35,6 +35,7 @@ import { toast } from 'react-toastify';
 import { allPaymentHistories } from '../redux/selectors/allPaymentSelector';
 import { useAppSelector } from '../redux/hooks';
 import dayjs from 'dayjs';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -132,6 +133,9 @@ const AdminPaymentHistoryPage = () => {
   const [selectingUsers, setSelectingUsers] = React.useState([]);
   const [secondPlus, setSecondPlus] = React.useState(false);
   const dateData = useAppSelector(allPaymentHistories);
+  const [dateSort, setDateSort] = React.useState(false);
+  const [realAmountSort, setRealAmountSort] = React.useState(false);
+  const [amountSort, setAmountSort] = React.useState(false);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableData?.length) : 0;
@@ -157,10 +161,66 @@ const AdminPaymentHistoryPage = () => {
   };
   useEffect(() => {
     if(payHistory !== undefined){
-      if(payHistory[4] !== null){setTableData(payHistory[4])}
+      let monthlyPays :any = [];
+      if(payHistory[4] !== null){
+        payHistory[4].map((value :any) => {
+          monthlyPays.push(value);
+        })
+        if(dateSort){
+          monthlyPays.sort((p1: any, p2:any) => {
+            if (p1.created_at > p2.created_at) return -1;
+            if (p1.created_at < p2.created_at) return 1;
+            return 0;
+          });
+        } else {
+          monthlyPays.sort((p1: any, p2:any) => {
+            if (p1.created_at < p2.created_at) return -1;
+            if (p1.created_at > p2.created_at) return 1;
+            return 0;
+          });
+        }
+        setTableData(monthlyPays)
+      }
       setSelectingUsers(payHistory[5])
     }
-  },[payHistory])
+  },[payHistory, dateSort])
+
+  useEffect(() => {
+    if(tableData.length !== 0) {
+      if(realAmountSort){
+        tableData.sort((p1: any, p2:any) => {
+          if (p1.realAmount > p2.realAmount) return -1;
+          if (p1.realAmount < p2.realAmount) return 1;
+          return 0;
+        });
+      } else {
+        tableData.sort((p1: any, p2:any) => {
+          if (p1.realAmount < p2.realAmount) return -1;
+          if (p1.realAmount > p2.realAmount) return 1;
+          return 0;
+        });
+      }
+    }
+  },[realAmountSort])
+
+  useEffect(() => {
+    if(tableData.length !== 0) {
+      if(amountSort){
+        tableData.sort((p1: any, p2:any) => {
+          if (p1.amount > p2.amount) return -1;
+          if (p1.amount < p2.amount) return 1;
+          return 0;
+        });
+      } else {
+        tableData.sort((p1: any, p2:any) => {
+          if (p1.amount < p2.amount) return -1;
+          if (p1.amount > p2.amount) return 1;
+          return 0;
+        });
+      }
+    }
+  },[amountSort])
+
 
   useEffect(() => {
     setDateValue(dayjs());
@@ -229,12 +289,21 @@ const AdminPaymentHistoryPage = () => {
             <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center">Date</StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Button style={{color:"grey",border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setDateSort(!dateSort)}><ImportExportIcon /></Button>
+                    Date
+                  </StyledTableCell>
                   <StyledTableCell align="center">Name</StyledTableCell>
                   <StyledTableCell align="center">Payment Method</StyledTableCell>
                   <StyledTableCell align="center">Rate</StyledTableCell>
-                  <StyledTableCell align="center">Real Amount</StyledTableCell>
-                  <StyledTableCell align="center">Rusult Amount</StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Button style={{color:"grey", border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setRealAmountSort(!realAmountSort)}><ImportExportIcon /></Button>
+                    Real Amount
+                  </StyledTableCell>
+                  <StyledTableCell align="left">
+                    <Button style={{color:"grey", border:"none",padding:"unset", minWidth:"unset"}} onClick={() =>setAmountSort(!amountSort)}><ImportExportIcon /></Button>
+                    Rusult Amount
+                  </StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
