@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { object, string, TypeOf } from 'zod';
 import { useCreateUpworkInfoMutation } from '../redux/api/upworkInfoApi';
 import { toast } from 'react-toastify';
-// import AdminUpworkInfoTable from '../components/adminUpworkInfoTable';
+import AdminUpworkInfoTable from '../components/adminUpworkInfoTable';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.4rem;
@@ -78,7 +78,7 @@ const AdminUpworkInfoPage = () => {
 
     useEffect(() => {
       if (isSuccess) {
-        toast.success('PCInfo created successfully');
+        toast.success('Created successfully');
       }
   
       if (isError) {
@@ -113,8 +113,54 @@ const AdminUpworkInfoPage = () => {
 
     return(
         <Container>
-            <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>AdminUpworkInfoPage</h5>
-        </Container>
+          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Upwork Informtion</h5>
+          <LoadingButton onClick={modelHandleShow}>
+            Add
+          </LoadingButton>
+          <Modal
+            open={modelShow}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >       
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                New Upwork Infomation?
+              </Typography>
+              <Box sx={{ width: '100%' }}>
+                 <FormProvider {...methods}>
+                   <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
+                        <Paper style={{boxShadow:"none"}}>
+                          <p style={{margin:"unset", color:"gray"}}>Name</p>
+                          <TextField
+                            fullWidth 
+                            rows={2}
+                            multiline
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('username')}
+                          />  
+                          <p style={{margin:"unset", color:"gray"}}>Account</p>
+                          <TextField
+                            fullWidth 
+                            rows={2}
+                            multiline
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('account')}
+                          />
+                        </Paper>
+                        <React.Fragment>
+                          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                            <Box sx={{ flex: '1 1 auto' }} />
+                            <Button onClick={handleClose}>close</Button>
+                            <Button type='submit'>Save</Button>
+                          </Box>
+                        </React.Fragment>
+                    </Box>
+                  </FormProvider>
+              </Box>
+            </Box>
+          </Modal>
+        <AdminUpworkInfoTable />
+      </Container>
     )
 }
 

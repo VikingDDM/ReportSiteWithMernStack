@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { IUpworkInfoResponse } from './types';
 import { ICreateUpworkInfo } from '../../pages/adminUpworkInfoPage';
+import { IUpdateUpworkInfo } from '../../components/adminUpworkInfoEditModal';
 
 export const upworkInfoApi = createApi({
   reducerPath: 'upworkInfoApi',
@@ -43,14 +44,14 @@ export const upworkInfoApi = createApi({
          results?.data.upworkinfo,
     }),
 
-    updateUpworkInfo: builder.mutation<IUpworkInfoResponse, { id: string; upworkinfo: any }>(
+    updateUpworkInfo: builder.mutation<IUpworkInfoResponse, { id: string; upworkInfo: IUpdateUpworkInfo }>(
       {
-        query({ id, upworkinfo }) {
+        query({ id, upworkInfo }) {
           return {
             url: `/upworkInfo/${id}`,
             method: 'PATCH',
             credentials: 'include',
-            body: upworkinfo,
+            body: upworkInfo,
           };
         },
         invalidatesTags: (result, error, { id }) =>

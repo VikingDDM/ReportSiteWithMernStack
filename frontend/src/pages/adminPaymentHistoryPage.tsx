@@ -34,6 +34,7 @@ import FullScreenLoader from '../components/fullScreenLoader';
 import { toast } from 'react-toastify';
 import { allPaymentHistories } from '../redux/selectors/allPaymentSelector';
 import { useAppSelector } from '../redux/hooks';
+import dayjs from 'dayjs';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -162,6 +163,10 @@ const AdminPaymentHistoryPage = () => {
   },[payHistory])
 
   useEffect(() => {
+    setDateValue(dayjs());
+  },[])
+
+  useEffect(() => {
     if(dateValue !== null){
       const submitDate = (dateValue.toDate()).toISOString();
       setSelectDateValue(submitDate);
@@ -209,7 +214,6 @@ const AdminPaymentHistoryPage = () => {
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment History </h5>
-          <AdminAllPayHistoryIllu payHistory = {payHistory}/>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
               <DatePicker label={'"month" and "year"'} 
@@ -220,6 +224,7 @@ const AdminPaymentHistoryPage = () => {
               />
             </DemoContainer>
           </LocalizationProvider>
+          <AdminAllPayHistoryIllu payHistory = {payHistory}/>
           <TableContainer component={Paper} style={{marginTop:"30px", marginBottom:"30px"}} >
             <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
               <TableHead>
