@@ -12,6 +12,8 @@ import userReducer from './features/userSlice';
 import sidebarActionReducer from "./features/sidebarActionSlice";
 import reportReducer from './features/reportSlice';
 import payHistoryReducer from './features/paymentSlice';
+import AllPayHistoryReducer from './features/allPaymentSlice';
+import submitDateReducer from './features/submitDateSlice'
 
 export const store:any = configureStore({
   reducer: {
@@ -28,6 +30,8 @@ export const store:any = configureStore({
     sidebarState: sidebarActionReducer,
     reportState: reportReducer,
     payHistoryState: payHistoryReducer,
+    allPayHistoryState: AllPayHistoryReducer,
+    submitDateState: submitDateReducer,
   },
   devTools: process.env.NODE_ENV === 'development',
   middleware: (getDefaultMiddleware) =>

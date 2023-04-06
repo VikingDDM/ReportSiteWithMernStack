@@ -1,13 +1,14 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { IUpworkInfoResponse } from './types';
+import { ICreateUpworkInfo } from '../../pages/adminUpworkInfoPage';
 
 export const upworkInfoApi = createApi({
   reducerPath: 'upworkInfoApi',
   baseQuery: customFetchBase,
   tagTypes: ['UpworkInfo'],
   endpoints: (builder) => ({  
-    createUpworkInfo: builder.mutation<IUpworkInfoResponse, any>({
+    createUpworkInfo: builder.mutation<IUpworkInfoResponse, ICreateUpworkInfo>({
       query(upworkinfo) {
         return {
           url: '/upworkInfo',

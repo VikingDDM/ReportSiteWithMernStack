@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -30,6 +30,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 const UserListItems =() => { 
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const location = useLocation(); 
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -50,12 +51,37 @@ const UserListItems =() => {
   const handleClickC = () => {
     setOpenC(!openC);
   };
+
+  React.useEffect(() => {
+    if(location?.pathname === "/user/landing") {
+      setSelectedIndex(0);
+    } else if(location?.pathname === "/user/dailyReport" || location?.pathname === "/user/weeklyReport") {
+      setOpenA(true)
+      if(location?.pathname === "/user/dailyReport"){setSelectedIndex(1);}
+      if(location?.pathname === "/user/weeklyReport"){setSelectedIndex(2);}
+    } else if (location?.pathname === "/user/paymentPlan") {
+      setOpenB(true)
+      setSelectedIndex(3);
+    } else if (location?.pathname === "/user/paymentInfo" ||
+               location?.pathname === "/user/freelancerInfo" ||
+               location?.pathname === "/user/upworkInfo" ||
+               location?.pathname === "/user/vpsInfo" ||
+               location?.pathname === "/user/pcInfo" 
+    ) {
+      setOpenC(true);
+      if(location?.pathname === "/user/paymentInfo"){setSelectedIndex(4);}
+      if(location?.pathname === "/user/freelancerInfo"){setSelectedIndex(5);}
+      if(location?.pathname === "/user/upworkInfo"){setSelectedIndex(6);}
+      if(location?.pathname === "/user/vpsInfo"){setSelectedIndex(7);}
+      if(location?.pathname === "/user/pcInfo"){setSelectedIndex(8);}
+    }
+  }, [location?.pathname])
   
   return (
   <React.Fragment>
     <ListItemButton
       selected={selectedIndex === 0}
-      onClick={(event) => {handleListItemClick(event, 0); navigate('/landing')}}
+      onClick={(event) => {handleListItemClick(event, 0); navigate('/user/landing')}}
     >
       <ListItemIcon>
         <DashboardIcon style={{color:"lightslategrey"}}/>
@@ -74,7 +100,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 1}
-          onClick={(event) => {handleListItemClick(event, 1); navigate('/landing/userDailyReport')}}
+          onClick={(event) => {handleListItemClick(event, 1); navigate('/user/dailyReport')}}
         >
           <ListItemIcon>
             <HistoryEduIcon style={{color:"lightslategrey"}}/>
@@ -86,7 +112,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 2}
-          onClick={(event) => {handleListItemClick(event, 2); navigate('/landing/userWeeklyReport')}}
+          onClick={(event) => {handleListItemClick(event, 2); navigate('/user/weeklyReport')}}
         >
           <ListItemIcon>
             <MenuBookIcon style={{color:"lightslategrey"}}/>
@@ -107,7 +133,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 3}
-          onClick={(event) => {handleListItemClick(event, 3); navigate('/landing/userPaymentPlan')}}
+          onClick={(event) => {handleListItemClick(event, 3); navigate('/user/paymentPlan')}}
         >
           <ListItemIcon>
             <RequestQuoteIcon style={{color:"lightslategrey"}}/>
@@ -128,7 +154,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 4}
-          onClick={(event) => {handleListItemClick(event, 4); navigate('/landing/userPaymentInfo')}}
+          onClick={(event) => {handleListItemClick(event, 4); navigate('/user/paymentInfo')}}
         >
           <ListItemIcon>
             <CurrencyExchangeIcon style={{color:"lightslategrey"}}/>
@@ -140,7 +166,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 5}
-          onClick={(event) => {handleListItemClick(event, 5); navigate('/landing/userFreelancerInfo')}}
+          onClick={(event) => {handleListItemClick(event, 5); navigate('/user/freelancerInfo')}}
         >
           <ListItemIcon>
             <ContactPageIcon style={{color:"lightslategrey"}}/>
@@ -152,7 +178,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 6}
-          onClick={(event) => {handleListItemClick(event, 6); navigate('/landing/userUpworkInfo')}}
+          onClick={(event) => {handleListItemClick(event, 6); navigate('/user/upworkInfo')}}
         >
           <ListItemIcon>
             <AssignmentIndIcon style={{color:"lightslategrey"}}/>
@@ -164,7 +190,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 7}
-          onClick={(event) => {handleListItemClick(event, 7); navigate('/landing/userVPSInfo')}}
+          onClick={(event) => {handleListItemClick(event, 7); navigate('/user/vpsInfo')}}
         >
           <ListItemIcon>
             <DesktopMacIcon style={{color:"lightslategrey"}}/>
@@ -176,7 +202,7 @@ const UserListItems =() => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 8}
-          onClick={(event) => {handleListItemClick(event, 8); navigate('/landing/userPCInfo')}}
+          onClick={(event) => {handleListItemClick(event, 8); navigate('/user/pcInfo')}}
         >
           <ListItemIcon>
             <LaptopChromebookIcon style={{color:"lightslategrey"}}/>
@@ -192,6 +218,7 @@ const UserListItems =() => {
 const AdminListItems = () => { 
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const location = useLocation();
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -216,11 +243,46 @@ const AdminListItems = () => {
   const handleClickD = () => {
     setOpenD(!openD);
   };
+
+  React.useEffect(() => {
+    if(location?.pathname === "/admin/landing") {
+      setSelectedIndex(0);
+    } else if(location?.pathname === "/admin/dailyReport" || location?.pathname === "/admin/reportStatus") {
+      setOpenA(true)
+      if(location?.pathname === "/admin/dailyReport"){setSelectedIndex(1);}
+      if(location?.pathname === "/admin/reportStatus"){setSelectedIndex(2);}
+    } else if (location?.pathname === "/admin/paymentStatus" || location?.pathname === "/admin/paymentHistory") {
+      setOpenB(true)
+      if(location?.pathname === "/admin/paymentStatus"){setSelectedIndex(3);}
+      if(location?.pathname === "/admin/paymentHistory"){setSelectedIndex(4);}
+    } else if (location?.pathname === "/admin/paymentInfo" ||
+               location?.pathname === "/admin/freelancerInfo" ||
+               location?.pathname === "/admin/upworkInfo" ||
+               location?.pathname === "/admin/vpsInfo" ||
+               location?.pathname === "/admin/pcInfo" 
+    ) {
+      setOpenC(true)
+      if(location?.pathname === "/admin/paymentInfo"){setSelectedIndex(5);}
+      if(location?.pathname === "/admin/freelancerInfo"){setSelectedIndex(6);}
+      if(location?.pathname === "/admin/upworkInfo"){setSelectedIndex(7);}
+      if(location?.pathname === "/admin/vpsInfo"){setSelectedIndex(8);}
+      if(location?.pathname === "/admin/pcInfo"){setSelectedIndex(9);}
+    } else if (location?.pathname === "/admin/reportSetting" ||
+    location?.pathname === "/admin/roleSetting" ||  
+    location?.pathname === "/admin/passwordSetting"   
+    ) {
+      setOpenD(true)
+      if(location?.pathname === "/admin/reportSetting"){setSelectedIndex(10);}
+      if(location?.pathname === "/admin/roleSetting"){setSelectedIndex(11);}
+      if(location?.pathname === "/admin/passwordSetting"){setSelectedIndex(12);}
+    }
+  }, [location?.pathname])
+
   return(
   <React.Fragment>
     <ListItemButton
       selected={selectedIndex === 0}
-      onClick={(event) => {handleListItemClick(event, 0); navigate('/landing')}}
+      onClick={(event) => {handleListItemClick(event, 0); navigate('/admin/landing')}}
     >
       <ListItemIcon>
         <AssignmentIcon style={{color:"lightslategrey"}}/>
@@ -239,7 +301,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 1}
-          onClick={(event) => {handleListItemClick(event, 1); navigate('/landing/adminDailyReport')}}
+          onClick={(event) => {handleListItemClick(event, 1); navigate('/admin/dailyReport')}}
         >
           <ListItemIcon>
             <HistoryEduIcon style={{color:"lightslategrey"}}/>
@@ -251,7 +313,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 2}
-          onClick={(event) => {handleListItemClick(event, 2); navigate('/landing/adminReportStatus')}}
+          onClick={(event) => {handleListItemClick(event, 2); navigate('/admin/reportStatus')}}
         >
           <ListItemIcon>
             <MenuBookIcon style={{color:"lightslategrey"}}/>
@@ -272,7 +334,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 3}
-          onClick={(event) => {handleListItemClick(event, 3); navigate('/landing/adminPaymentStatus')}}
+          onClick={(event) => {handleListItemClick(event, 3); navigate('/admin/paymentStatus')}}
         >
           <ListItemIcon>
             <SavingsIcon style={{color:"lightslategrey"}}/>
@@ -284,7 +346,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 4}
-          onClick={(event) => {handleListItemClick(event, 4); navigate('/landing/adminPaymentHistory')}}
+          onClick={(event) => {handleListItemClick(event, 4); navigate('/admin/paymentHistory')}}
         >
           <ListItemIcon>
             <PriceChangeIcon style={{color:"lightslategrey"}}/>
@@ -305,7 +367,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 5}
-          onClick={(event) => {handleListItemClick(event, 5); navigate('/landing/adminPaymentInfo')}}
+          onClick={(event) => {handleListItemClick(event, 5); navigate('/admin/paymentInfo')}}
         >
           <ListItemIcon>
             <CurrencyExchangeIcon style={{color:"lightslategrey"}}/>
@@ -317,7 +379,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 6}
-          onClick={(event) => {handleListItemClick(event, 6); navigate('/landing/adminFreelancerInfo')}}
+          onClick={(event) => {handleListItemClick(event, 6); navigate('/admin/freelancerInfo')}}
         >
           <ListItemIcon>
             <ContactPageIcon style={{color:"lightslategrey"}}/>
@@ -329,7 +391,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 7}
-          onClick={(event) => {handleListItemClick(event, 7); navigate('/landing/adminUpworkInfo')}}
+          onClick={(event) => {handleListItemClick(event, 7); navigate('/admin/upworkInfo')}}
         >
           <ListItemIcon>
             <AssignmentIndIcon style={{color:"lightslategrey"}}/>
@@ -341,7 +403,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 8}
-          onClick={(event) => {handleListItemClick(event, 8); navigate('/landing/adminVPSInfo')}}
+          onClick={(event) => {handleListItemClick(event, 8); navigate('/admin/vpsInfo')}}
         >
           <ListItemIcon>
             <DesktopMacIcon style={{color:"lightslategrey"}}/>
@@ -353,7 +415,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }}
           selected={selectedIndex === 9}
-          onClick={(event) => {handleListItemClick(event, 9); navigate('/landing/adminPCInfo')}}
+          onClick={(event) => {handleListItemClick(event, 9); navigate('/admin/pcInfo')}}
         >
           <ListItemIcon>
             <LaptopChromebookIcon style={{color:"lightslategrey"}}/>
@@ -374,7 +436,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 10}
-          onClick={(event) => {handleListItemClick(event, 10); navigate('/landing/adminReportSetting')}}
+          onClick={(event) => {handleListItemClick(event, 10); navigate('/admin/reportSetting')}}
         >
           <ListItemIcon>
             <SettingsBrightnessIcon style={{color:"lightslategrey"}}/>
@@ -386,7 +448,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 11}
-          onClick={(event) => {handleListItemClick(event, 11); navigate('/landing/adminRollSetting')}}
+          onClick={(event) => {handleListItemClick(event, 11); navigate('/admin/roleSetting')}}
         >
           <ListItemIcon>
             <PsychologyIcon style={{color:"lightslategrey"}}/>
@@ -398,7 +460,7 @@ const AdminListItems = () => {
         <ListItemButton 
           sx={{ pl: 4 }} 
           selected={selectedIndex === 12}
-          onClick={(event) => {handleListItemClick(event, 12); navigate('/landing/adminPasswordSetting')}}
+          onClick={(event) => {handleListItemClick(event, 12); navigate('/admin/passwordSetting')}}
         >
           <ListItemIcon>
             <RoomPreferencesIcon style={{color:"lightslategrey"}}/>

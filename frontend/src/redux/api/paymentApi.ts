@@ -5,6 +5,7 @@ import { IUpdatePayHistory } from '../../components/adminPaymentStatusEditModal'
 import { ICreatePayPlan } from '../../pages/userPaymentPlanPage'
 import { IUpdatePayPlan } from '../../components/userPayPlanEditModal'
 import { getAllPayHistory } from '../features/paymentSlice';
+import { getAllPayHistories } from '../features/allPaymentSlice';
 
 export const paymentApi = createApi({
   reducerPath: 'paymentApi',
@@ -91,6 +92,12 @@ export const paymentApi = createApi({
       invalidatesTags: [{ type: 'Payment', id: 'LIST' }],
       transformResponse: (result: { data: { payment: any } }) =>
         result.data.payment,
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(getAllPayHistory(data));
+        } catch (error) {}
+      },
     }),      
 
     getMonthlyPayHistory: builder.query<any, void>({
@@ -114,7 +121,7 @@ export const paymentApi = createApi({
          results?.data.payment,
     }),
 
-    getMonthlyAll: builder.query<any, void>({
+    getMonthlyAll: builder.query<any, null>({
       query() {
         return {
           url: `/payment/monthlyall`,
@@ -123,6 +130,12 @@ export const paymentApi = createApi({
       },
       transformResponse: (results: { data: { payment: any} }) =>
         results?.data.payment,
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(getAllPayHistory(data));
+        } catch (error) {}
+      },
    }),
 
    getYearlyAll: builder.query<any, void>({
@@ -148,7 +161,6 @@ export const paymentApi = createApi({
     async onQueryStarted(args, { dispatch, queryFulfilled }) {
       try {
         const { data } = await queryFulfilled;
-        dispatch(getAllPayHistory(data));
         
       } catch (error) {}
     },
@@ -173,6 +185,15 @@ export const paymentApi = createApi({
             : [{ type: 'Payment', id: 'LIST' }],
         transformResponse: (response: { data: { payment: any } }) =>
           response.data.payment,
+        async onQueryStarted(args, { dispatch, queryFulfilled }) {
+          try {
+            const { data } = await queryFulfilled;
+            const monthData = [data[0], data[1], data[2], data[3]];
+            const dateData = [data[4]];
+            dispatch(getAllPayHistory(monthData));
+            dispatch(getAllPayHistories(dateData));
+          } catch (error) {}
+        },
       }
     ),  
     deletePayment: builder.mutation<any, string | null>({

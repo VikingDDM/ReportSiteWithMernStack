@@ -1,3 +1,4 @@
+import {useState, useEffect} from 'react';
 import './App.css';
 import { CssBaseline } from '@mui/material';
 import { Route, Routes } from 'react-router-dom';
@@ -24,44 +25,80 @@ import AdminUpworkInfoPage from './pages/adminUpworkInfoPage';
 import AdminVPSInfoPage from './pages/adminVPSInfoPage';
 import AdminPCInfoPage from './pages/adminPCInfoPage';
 import AdminReportSettingPage from './pages/adminReportSettingPage';
-import AdminRollSettingPage from './pages/adminRollSettingPage';
+import AdminRoleSettingPage from './pages/adminRoleSettingPage';
 import AdminPasswordSettingPage from './pages/adminPasswordSettingPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { userApi } from "./redux/api/userApi";
+import { useCookies } from 'react-cookie';
+import { useNavigate, useLocation } from "react-router-dom";
 
 const theme = createTheme();
 
 function App() {
+  const navigate = useNavigate();
+  const [userrole, setUserrole] = useState("");
+  const [cookies] = useCookies(['logged_in']);
+  const location = useLocation(); 
+  
+  const user = userApi.endpoints.getMe.useQueryState(null, {
+    selectFromResult: ({ data }) => data!,
+  });
+
+  useEffect(() => {
+    setUserrole(user?.role)
+  }, [user?.role])
+  
+  useEffect(() => {
+     if (cookies.logged_in && location?.pathname === "/"){
+      if(user?.role === "user") {
+        return navigate("/user/landing");
+      } else if(user?.role === "admin"){
+        return navigate("/admin/landing");
+      }
+     }
+  },[cookies.logged_in]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ToastContainer />
-      <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='landing' element={<Layout />}>
-          <Route index element={<LandingPage />} />
-          <Route path='userDailyReport' element={<UserDailyReportPage />} />
-          <Route path='userWeeklyReport' element={<UserWeeklyReportPage />} />
-          <Route path='userPaymentPlan' element={<UserPaymentPlanPage />} />
-          <Route path='userPaymentInfo' element={<UserPaymentInfoPage />} />
-          <Route path='userFreelancerInfo' element={<UserFreelancerInfoPage />} />
-          <Route path='userUpworkInfo' element={<UserUpworkInfoPage />} />
-          <Route path='userVPSInfo' element={<UserVPSInfoPage />} />
-          <Route path='userPCInfo' element={<UserPCInfoPage />} />
-          <Route path='adminDailyReport' element={<AdminDailyReportPage />} />
-          <Route path='adminReportStatus' element={<AdminReportStatusPage />} />
-          <Route path='adminPaymentHistory' element={<AdminPaymentHistorytPage />} />
-          <Route path='adminPaymentStatus' element={<AdminPaymentStatusPage />} />
-          <Route path='adminPaymentInfo' element={<AdminPaymentInfoPage />} />
-          <Route path='adminFreelancerInfo' element={<AdminFreelancerInfoPage />} />
-          <Route path='adminUpworkInfo' element={<AdminUpworkInfoPage />} />
-          <Route path='adminVPSInfo' element={<AdminVPSInfoPage />} />
-          <Route path='adminPCInfo' element={<AdminPCInfoPage />} />
-          <Route path='adminReportSetting' element={<AdminReportSettingPage />} />
-          <Route path='adminRollSetting' element={<AdminRollSettingPage />} />
-          <Route path='adminPasswordSetting' element={<AdminPasswordSettingPage />} />
-        </Route>
+        <Routes>
+          <Route path='/' element={<HomePage />} />
+          {userrole === "user" ? (
+            <>
+            <Route path='user' element={<Layout />}>
+              <Route path='landing' element={<LandingPage />} />
+              <Route path='dailyReport' element={<UserDailyReportPage />} />
+              <Route path='weeklyReport' element={<UserWeeklyReportPage />} />
+              <Route path='paymentPlan' element={<UserPaymentPlanPage />} />
+              <Route path='paymentInfo' element={<UserPaymentInfoPage />} />
+              <Route path='freelancerInfo' element={<UserFreelancerInfoPage />} />
+              <Route path='upworkInfo' element={<UserUpworkInfoPage />} />
+              <Route path='vpsInfo' element={<UserVPSInfoPage />} />
+              <Route path='pcInfo' element={<UserPCInfoPage />} />
+            </Route>
+            </>
+          ) : (
+            <>
+            <Route path='admin' element={<Layout />}>
+              <Route path='landing' element={<LandingPage />} />
+              <Route path='dailyReport' element={<AdminDailyReportPage />} />
+              <Route path='reportStatus' element={<AdminReportStatusPage />} />
+              <Route path='paymentHistory' element={<AdminPaymentHistorytPage />} />
+              <Route path='paymentStatus' element={<AdminPaymentStatusPage />} />
+              <Route path='paymentInfo' element={<AdminPaymentInfoPage />} />
+              <Route path='freelancerInfo' element={<AdminFreelancerInfoPage />} />
+              <Route path='upworkInfo' element={<AdminUpworkInfoPage />} />
+              <Route path='vpsInfo' element={<AdminVPSInfoPage />} />
+              <Route path='pcInfo' element={<AdminPCInfoPage />} />
+              <Route path='reportSetting' element={<AdminReportSettingPage />} />
+              <Route path='roleSetting' element={<AdminRoleSettingPage />} />
+              <Route path='passwordSetting' element={<AdminPasswordSettingPage />} />
+            </Route>
+            </>
+          )}
         <Route path='signin' element={<SigninPage />} />
         <Route path='signup' element={<SignupPage />} />
       </Routes>

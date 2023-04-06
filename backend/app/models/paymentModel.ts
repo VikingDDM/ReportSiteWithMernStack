@@ -37,6 +37,12 @@ export class Payment {
   paymentWay: string;
 
   @prop()
+  realAmount: string;
+
+  @prop()
+  rate: string;
+
+  @prop()
   amount: string;
 
   @prop()

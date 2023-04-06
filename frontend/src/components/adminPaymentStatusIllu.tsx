@@ -12,9 +12,11 @@ import Typography from '@mui/material/Typography';
 import { useGetMonthlyAllQuery } from '../redux/api/paymentApi';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import { allPaymentHistory } from '../redux/selectors/paymentSelector';
+import { useAppSelector } from '../redux/hooks';
 
 export interface ChildProps{
-  transUser: (users: any) => void
+  transUser: (users: any) => void,
 }
 
 const AdminPaymentStatusIllu = (props: ChildProps) => {
@@ -22,13 +24,14 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
   const [cardData, setCardData] = React.useState("");
   let gotUsers : any = [];
 
-  const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery();
+  const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery(null);
+  const payHistory = useAppSelector(allPaymentHistory);
 
   useEffect(() => {
     let iniChartData :any = [];
-    if(allMonthlyHistory !== undefined){
-      if(allMonthlyHistory[2].length !== 0){
-        allMonthlyHistory[2]?.map((planValue:any,key:any) => {
+    if(payHistory !== undefined){
+      if(payHistory[2]?.length !== 0){
+        payHistory[2]?.map((planValue:any,key:any) => {
           let chartValue:any = {
             name: '',
             income: 0,
@@ -36,12 +39,13 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
             amt: 2200,
           }
           chartValue.name = planValue.name;
-          chartValue.plan = parseInt(planValue.plan);
-          const incomeValue = allMonthlyHistory[1]?.find((value:any) => {return value.name === planValue.name; })
+          chartValue.plan = parseFloat(planValue.plan);
+          const incomeValue = payHistory[1]?.find((value:any) => {return value.name === planValue.name; })
           if(Number.isNaN(incomeValue.eachMonthlyAmount)){incomeValue.income = 0}
-          else { chartValue.income = parseInt(incomeValue.eachMonthlyAmount) }
+          else { chartValue.income = parseFloat(incomeValue.eachMonthlyAmount) }
           iniChartData.push(chartValue);
         })
+        setChartData(iniChartData);
       } else {
         let chartValue:any = {
           name: 'No body has set the plan.',
@@ -50,14 +54,14 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
           amt: 2200,
         }
         iniChartData[0] = chartValue;
+        setChartData(iniChartData);
       }
-      if(allMonthlyHistory[0] !== null) {setCardData(allMonthlyHistory[0].monthlyAmount);}
+      if(payHistory[0] !== null) {setCardData(payHistory[0]?.monthlyAmount);}
       else {setCardData('0');}
-      gotUsers = allMonthlyHistory[3];
+      gotUsers = payHistory[3];
       props.transUser(gotUsers);
    } 
-    setChartData(iniChartData);
-  }, [allMonthlyHistory])
+  }, [payHistory])
 
   useEffect(() => {
     if (isError) {

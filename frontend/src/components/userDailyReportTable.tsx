@@ -58,7 +58,6 @@ function UserDailyReportTable(props: ChildProps) {
        } else{
         buttonAble = "block"
        }
-       console.log(buttonAble)
        props.setBtnAble(buttonAble)
       }
     },[userdailyreports])

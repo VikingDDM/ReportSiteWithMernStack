@@ -27,11 +27,13 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { allPaymentHistory } from '../redux/selectors/paymentSelector';
-import { useAppDispatch ,useAppSelector } from '../redux/hooks';
-import { paymentApi } from '../redux/api/paymentApi';
+import { useGetAllHistoryQuery } from '../redux/api/paymentApi';
 import { Dayjs } from 'dayjs';
 import AdminAllPayHistoryIllu from '../components/adminAllPayHistoryIllu'
+import FullScreenLoader from '../components/fullScreenLoader';
+import { toast } from 'react-toastify';
+import { allPaymentHistories } from '../redux/selectors/allPaymentSelector';
+import { useAppSelector } from '../redux/hooks';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -112,26 +114,32 @@ return (
 }
 
 const AdminPaymentHistoryPage = () => {
-  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null);
-  const dispatch:any = useAppDispatch();
-  const payHistory = useAppSelector(allPaymentHistory);
+  
+  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null)
+  const [selectDateValue, setSelectDateValue] = React.useState(new Date().toISOString());
+  const { isLoading, isError, error, data: payHistory } = useGetAllHistoryQuery(selectDateValue);
 
   const[tableData,setTableData] = React.useState([]);
-  
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [dataid, setDataid] = React.useState("");
   const [dataName, setDataName] = React.useState("");
   const [dataPayMothod, setDataPayMothod] = React.useState("");
+  const [dataRate, setDataRate] = React.useState("");
   const [dataAmount, setDataAmount] = React.useState("");
   const [show, setShow] = React.useState(false);
+  const [selectingUsers, setSelectingUsers] = React.useState([]);
+  const [secondPlus, setSecondPlus] = React.useState(false);
+  const dateData = useAppSelector(allPaymentHistories);
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableData?.length) : 0;
   const handleShow = (data: any) => {setShow(true); 
                                      setDataid(data._id); 
                                      setDataName(data.name);
                                      setDataPayMothod(data.paymentWay);
-                                     setDataAmount(data.amount);} 
+                                     setDataRate(data.rate);
+                                     setDataAmount(data.realAmount);} 
   const handleClose = () => {setShow(false);}
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -147,23 +155,61 @@ const AdminPaymentHistoryPage = () => {
     setPage(0);
   };
   useEffect(() => {
-    if(payHistory.length !== 0){
+    if(payHistory !== undefined){
       if(payHistory[4] !== null){setTableData(payHistory[4])}
+      setSelectingUsers(payHistory[5])
     }
   },[payHistory])
-  
+
   useEffect(() => {
-    let submitDate = '';
     if(dateValue !== null){
-       submitDate = (dateValue.toDate()).toISOString(); 
-       console.log(submitDate)
-       dispatch(paymentApi.endpoints.getAllHistory.initiate(submitDate));}
+      const submitDate = (dateValue.toDate()).toISOString();
+      setSelectDateValue(submitDate);
+    }
     }, [dateValue]);
+
+  useEffect(() => {
+    setSecondPlus(!secondPlus);
+    if(dateData[0] !== undefined){
+      if(secondPlus){
+        const virtualDate = new Date(dateData[0]);
+        const second = virtualDate.getSeconds() + (Math.random() * 10);
+        virtualDate.setSeconds(second);
+        const submitDate = virtualDate.toISOString();
+        setSelectDateValue(submitDate)
+      } else{
+        const submitDate = dateData[0];
+        setSelectDateValue(submitDate)
+      }
+      
+    }
+    }, [dateData]);
+
+    useEffect(() => {
+      if (isError) {
+        if (Array.isArray((error as any)?.data?.error)) {
+          (error as any).data.error.forEach((el: any) =>
+            toast.error(el.message, {
+              position: 'top-right',
+            })
+          );
+        } else {
+          toast.error((error as any)?.data?.message, {
+            position: 'top-right',
+          });
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoading]);
+  
+    if (isLoading) {
+      return <FullScreenLoader />;
+    }
  
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment History </h5>
-          <AdminAllPayHistoryIllu />
+          <AdminAllPayHistoryIllu payHistory = {payHistory}/>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
               <DatePicker label={'"month" and "year"'} 
@@ -174,14 +220,16 @@ const AdminPaymentHistoryPage = () => {
               />
             </DemoContainer>
           </LocalizationProvider>
-          <TableContainer component={Paper} style={{marginTop:"30px"}} >
+          <TableContainer component={Paper} style={{marginTop:"30px", marginBottom:"30px"}} >
             <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
               <TableHead>
                 <TableRow>
                   <StyledTableCell align="center">Date</StyledTableCell>
                   <StyledTableCell align="center">Name</StyledTableCell>
                   <StyledTableCell align="center">Payment Method</StyledTableCell>
-                  <StyledTableCell align="center">Amount</StyledTableCell>
+                  <StyledTableCell align="center">Rate</StyledTableCell>
+                  <StyledTableCell align="center">Real Amount</StyledTableCell>
+                  <StyledTableCell align="center">Rusult Amount</StyledTableCell>
                   <StyledTableCell align="center">Action</StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -194,21 +242,27 @@ const AdminPaymentHistoryPage = () => {
                     <StyledTableCell component="th" scope="row">
                       {row?.created_at}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
                       {row.name}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
                       {row?.paymentWay}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                      {row?.rate}
+                    </StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                      {row?.realAmount}
+                    </StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
                       {row?.amount}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="center">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="center">
                       <Button onClick={() => handleShow(row)} >
                         <BorderColorIcon style={{color:"dodgerblue"}} />
                       </Button>
                       
-                      <AdminPaymentStatusDeleteButton payment_id={dataid} />
+                      <AdminPaymentStatusDeleteButton payment_id={row?.id} />
                     </StyledTableCell>
                   </TableRow>
                 ))}
@@ -246,7 +300,9 @@ const AdminPaymentHistoryPage = () => {
                       payHistory_id = {dataid}
                       defaultValueA = {dataName} 
                       defaultValueB = {dataPayMothod}
-                      defaultValueC = {dataAmount} />
+                      defaultValueC = {dataRate} 
+                      defaultValueD = {dataAmount}
+                      selectUsers = {selectingUsers}/>
           </TableContainer>
         </Container>
     )

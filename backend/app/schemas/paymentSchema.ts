@@ -13,6 +13,8 @@ export const createPayHistorySchema = object({
     body: object({
       name: string({ required_error: 'Content is required'}),
       paymentWay: string(),
+      realAmount: string(),
+      rate: string(),
       amount: string({
         required_error: 'Value is required',
       }),

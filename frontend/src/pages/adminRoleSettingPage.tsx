@@ -1,6 +1,6 @@
 import { Container } from "@mui/system"
 
-const AdminRollSettingPage = () => {
+const AdminRoleSettingPage = () => {
     return(
         <Container>
             <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>AdminRollSettingPage</h5>
@@ -8,4 +8,4 @@ const AdminRollSettingPage = () => {
     )
 }
 
-export default AdminRollSettingPage;
+export default AdminRoleSettingPage;

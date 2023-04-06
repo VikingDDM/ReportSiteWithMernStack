@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -108,21 +108,36 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 function AdminPaymentStatusTable() {
    
     const { isLoading, isError, error, data: payHistory } = useGetMonthlyPayHistoryQuery();
+    const [monthlyPay, setMonthlyPay] = useState([]);
+    const [selectingUsers, setSelectingUsers] = useState([]);
+
+    useEffect(() => {
+      let monthlyPays :any = [];
+      let selUesrs: any = [];
+      if(payHistory !== undefined){
+        monthlyPays = payHistory[0];
+        selUesrs = payHistory[1];
+      }
+      setMonthlyPay(monthlyPays);
+      setSelectingUsers(selUesrs);
+    },[payHistory])
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [dataid, setDataid] = React.useState("");
     const [dataName, setDataName] = React.useState("");
-    const [dataPayMothod, setDataPayMothod] = React.useState("");
+    const [dataPayMethod, setDataPayMethod] = React.useState("");
+    const [dataRate, setDataRate] = React.useState("");
     const [dataAmount, setDataAmount] = React.useState("");
     const [show, setShow] = React.useState(false);
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - payHistory?.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - monthlyPay.length) : 0;
 
     const handleShow = (data: any) => {setShow(true); 
                                        setDataid(data._id); 
                                        setDataName(data.name);
-                                       setDataPayMothod(data.paymentWay);
-                                       setDataAmount(data.amount);} 
+                                       setDataPayMethod(data.paymentWay);
+                                       setDataRate(data.rate);
+                                       setDataAmount(data.realAmount);} 
     const handleClose = () => {setShow(false);}
 
     const handleChangePage = (
@@ -161,36 +176,43 @@ function AdminPaymentStatusTable() {
       }
    
     return (
-      <TableContainer component={Paper} style={{marginTop:"30px"}} >
+      <TableContainer component={Paper} style={{marginTop:"30px", marginBottom:"30px"}} >
         <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
           <TableHead>
             <TableRow>
+              <StyledTableCell align="center">Date</StyledTableCell>
               <StyledTableCell align="center">Name</StyledTableCell>
               <StyledTableCell align="center">Payment Method</StyledTableCell>
-              <StyledTableCell align="center">Amount</StyledTableCell>
-              <StyledTableCell align="center">Date</StyledTableCell>
+              <StyledTableCell align="center">Rate</StyledTableCell>
+              <StyledTableCell align="center">Real Amount</StyledTableCell>
+              <StyledTableCell align="center">Rusult Amount</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {(rowsPerPage > 0
-              ? payHistory?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : payHistory
-            )?.map((row:any, key: any) => (
+              ? monthlyPay.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : monthlyPay            )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                 <StyledTableCell component="th" scope="row">
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                  {row?.paymentWay}
-                </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                  {row?.amount}
-                </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
                   {row?.created_at}
                 </StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis" }} align="left">
+                  {row.name}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis" }} align="left">
+                  {row?.paymentWay}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis" }} align="left">
+                  {row?.rate}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                  {row?.realAmount}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                  {row?.amount}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}}align="center">
                   <Button onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
@@ -210,7 +232,7 @@ function AdminPaymentStatusTable() {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={7}
-                count={payHistory?.length}
+                count={monthlyPay.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -232,8 +254,10 @@ function AdminPaymentStatusTable() {
                   handleModalClose={handleClose}   
                   payHistory_id = {dataid}
                   defaultValueA = {dataName} 
-                  defaultValueB = {dataPayMothod}
-                  defaultValueC = {dataAmount} />
+                  defaultValueB = {dataPayMethod}
+                  defaultValueC = {dataRate} 
+                  defaultValueD = {dataAmount}
+                  selectUsers = {selectingUsers} />
       </TableContainer>
     );
   }

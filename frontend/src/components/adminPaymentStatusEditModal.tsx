@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { Modal } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -10,6 +10,8 @@ import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdatePayHistoryMutation } from "../redux/api/paymentApi";
 import { toast } from 'react-toastify';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -30,18 +32,26 @@ type IUserPayInfoEditModelProps = {
   defaultValueA: any;
   defaultValueB: any;
   defaultValueC: any;
+  defaultValueD: any;
+  selectUsers: any;
 }
 
 const updatePayHistorySchema = object({
-    name: string(),
-    paymentWay: string(),
-    amount: string(),
+     name: string(),
+     paymentWay: string(),
+     rate: string(),
+     realAmount: string(),
+     amount: string(),
 }).partial();
 
 export type IUpdatePayHistory = TypeOf<typeof updatePayHistorySchema>;
 
-const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id, defaultValueA, defaultValueB, defaultValueC} : IUserPayInfoEditModelProps) => {
+const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id, defaultValueA, defaultValueB, defaultValueC, defaultValueD, selectUsers} : IUserPayInfoEditModelProps) => {
 
+    const [nameSelect, setNameSelect] = useState('');  
+    const handleNameSelectChange = (event: SelectChangeEvent) => {
+      setNameSelect(event.target.value as string);
+    };
     const [updatePayHistory, { isLoading, isError, error, isSuccess }] = useUpdatePayHistoryMutation();
     
     const methods = useForm<IUpdatePayHistory>({
@@ -53,13 +63,21 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
         handleSubmit,
         register,
         setValue,
-        formState: { isSubmitting },
+        setError,
+        clearErrors,
+        formState: { isSubmitting, errors },
     } = methods;
 
+    register('name', {
+      onChange: handleNameSelectChange,
+    });
     useEffect(() => {
       setValue('name', defaultValueA)
       setValue('paymentWay', defaultValueB)
-      setValue('amount', defaultValueC)
+      setValue('rate', defaultValueC)
+      setValue('realAmount', defaultValueD)
+      setValue('amount', (Number(defaultValueC) * Number(defaultValueD)).toString())
+      clearErrors('rate');
     }, [modalShow])
 
     useEffect(() => {
@@ -90,9 +108,38 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitting]);
-    
+
     const onSubmitHandler: SubmitHandler<IUpdatePayHistory> = (values) => {
-        updatePayHistory({ id: payHistory_id, payment: values });
+      if(values.rate !== undefined && values.realAmount !== undefined) {
+        if(parseFloat(values.rate) > 0 && parseFloat(values.rate) <= 1){
+          let rateFloat = parseFloat(values.rate) * 10;
+          let realAmountFloat = parseFloat(values.realAmount) * 10;
+          let ratePointNum = 1;
+          let realAmountPointNum = 1;
+          if(Number.isInteger(rateFloat) !== true){
+            while(Number.isInteger(rateFloat) !== true ) {
+              rateFloat = rateFloat * 10;
+              ratePointNum ++;
+            }
+          }
+          if(Number.isInteger(realAmountFloat) !== true) {
+            while(Number.isInteger(realAmountFloat) !== true ) {
+              realAmountFloat = realAmountFloat * 10;
+              realAmountPointNum ++;
+            }
+          }
+        const amountValue = ((rateFloat * realAmountFloat)/Math.pow(10, (ratePointNum + realAmountPointNum))).toString();
+        
+        updatePayHistory({ id: payHistory_id, 
+                           payment: {name:values.name, 
+                                     paymentWay:values.paymentWay, 
+                                     realAmount:values.realAmount, 
+                                     rate:values.rate, 
+                                     amount:amountValue} });   
+        } else {
+          setError('rate', { type: 'custom', message: 'Rate must between 1 and 0' });
+        }
+      }
     }
 
     return(
@@ -110,31 +157,44 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
                           <p style={{margin:"unset", color:"gray"}}>Name</p>
-                          <TextField
-                            fullWidth 
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
                             defaultValue={defaultValueA}
-                            rows={2}
-                            multiline
-                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            fullWidth
+                            style={{ marginTop:"2px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('name')}
-                          />  
-                          <p style={{margin:"unset", color:"gray"}}>Category</p>
+                          >
+                            {selectUsers.map((userForSelect : any, key: any) => {
+                              return(
+                                <MenuItem key = {key} value={userForSelect.name}>{userForSelect.name}</MenuItem>
+                              )
+                            })}
+                          </Select>
+                          <p style={{margin:"unset", color:"gray"}}>Payment Method</p>
                           <TextField
                             fullWidth 
                             defaultValue={defaultValueB}
-                            rows={2}
-                            multiline
                             style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('paymentWay')}
                           />
-                          <p style={{margin:"unset", color:"gray"}}>Account</p>
+                          <p style={{margin:"unset", color:"gray"}}>Rate</p>
                           <TextField
                             fullWidth 
                             defaultValue={defaultValueC}
-                            rows={2}
-                            multiline
+                            error={!!errors['name']}
+                            type="number"
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('amount')}
+                            {...register('rate')}
+                          />
+                          {errors.rate && <p style={{margin:"unset", color:"red"}}>{errors.rate.message}</p>}
+                          <p style={{margin:"unset", color:"gray"}}>Real Amount</p>
+                          <TextField
+                            fullWidth 
+                            defaultValue={defaultValueD}
+                            type="number"
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('realAmount')}
                           />
                         </Paper>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

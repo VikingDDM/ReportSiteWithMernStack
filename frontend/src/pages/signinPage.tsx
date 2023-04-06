@@ -9,11 +9,12 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from "../components/formInput";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import { useSigninUserMutation } from '../redux/api/authApi';
+import { userApi } from "../redux/api/userApi";
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -40,7 +41,7 @@ const signinSchema = object({
 export type SigninInput = TypeOf<typeof signinSchema>;
 
 const SigninPage = () => {
-    const methods = useForm<SigninInput>({
+      const methods = useForm<SigninInput>({
         resolver: zodResolver(signinSchema),
       });
     
@@ -50,9 +51,21 @@ const SigninPage = () => {
     
       const navigate = useNavigate();
       const location = useLocation();
+
+      const user = userApi.endpoints.getMe.useQueryState(null, {
+        selectFromResult: ({ data }) => data!,
+      });
     
-      const from = ((location.state as any)?.from.pathname as string) || '/landing';
-    
+      useEffect(() => {
+        let from = '';
+        if(user?.role === 'user'){
+          from = (((location.state as any)?.from.pathname as string) || '/user/landing');
+        } else if(user?.role === 'admin') {
+          from = ((location.state as any)?.from.pathname as string) || '/admin/landing';
+        }
+        navigate(from);
+      }, [user?.role])
+
       const {
         reset,
         handleSubmit,
@@ -62,7 +75,6 @@ const SigninPage = () => {
       useEffect(() => {
         if (isSuccess) {
           toast.success('You successfully logged in');
-          navigate(from);
         }
         if (isError) {
           if (Array.isArray((error as any).data.error)) {

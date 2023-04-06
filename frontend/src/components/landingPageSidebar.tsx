@@ -95,7 +95,7 @@ const LandingPageSidebar = () => {
           <img src='/logo.png' width={90} height={40} style={{float:"right"}}></img>
         </Toolbar>
         <Divider />
-        <List component="nav" style={{overflow:"auto", height:"600px"}}>
+        <List component="nav" style={{overflowX:'hidden',overflowY:'auto', height:"600px"}}>
           {userrole === "admin" && <AdminListItems />}
           {userrole === "user" && <UserListItems />}  
         </List>

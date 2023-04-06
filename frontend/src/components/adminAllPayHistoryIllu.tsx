@@ -16,8 +16,6 @@ import DashboardChartTitle from './dashboardChartTitle';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { allPaymentHistory } from '../redux/selectors/paymentSelector';
-import { useAppSelector } from '../redux/hooks';
 
 // EachMonthTotalChart
 function createData(time: string, amount?: number) {
@@ -118,34 +116,31 @@ function createData(time: string, amount?: number) {
   };
 
   // BarChart
-  
 
-const AdminAllPayHistoryIllu = () => {
+const AdminAllPayHistoryIllu = (payHistory:any) => {
     const theme = useTheme();
-    const payHistory = useAppSelector(allPaymentHistory);
     const [barChartData, setBarChartData] = useState([]);
     const [totalAmount, setTotalAmount] = useState("0");
-
     // EachMonthTotalChart
     useEffect(() => {
        
-        if(payHistory.length !== 0){
-          if(payHistory[1] !== null){
-            payHistory[1].map((value:any,key:any) => {
+        if(payHistory.payHistory.length !== 0){
+          if(payHistory.payHistory[1] !== undefined){
+            payHistory.payHistory[1].map((value:any,key:any) => {
                 data[key] = createData(months[key], parseInt(value))
               })
           }
-          if(payHistory[0] !==null) {
-            setTotalAmount(payHistory[0]);
+          if(payHistory.payHistory[0] !==null) {
+            setTotalAmount(payHistory.payHistory[0]);
           }
-          if(payHistory[2] !==null) {
-            payHistory[2].map((eachVal:any,key:any) => {
+          if(payHistory.payHistory[2] !==undefined) {
+            payHistory.payHistory[2].map((eachVal:any,key:any) => {
               pinChartdata[key] = {name:eachVal.name, value:eachVal.yearlyIndividualAmount}
             }) 
           }
-          if(payHistory[3] !== null){
+          if(payHistory.payHistory[3] !== undefined){
             let iniChartData:any = [];
-            payHistory[3].map((eachVal:any,key:any) => {
+            payHistory.payHistory[3]?.map((eachVal:any,key:any) => {
               let chartValue:any = {
                 name: '',
                 income: 0,
@@ -158,13 +153,15 @@ const AdminAllPayHistoryIllu = () => {
               setBarChartData(iniChartData)
             }
         }
-      },[payHistory])
+      },[payHistory.payHistory])
       // PinChart
       const [activeIndex, setActiveIndex] = useState(0);
     
       const onPieEnter = (_:any, index:any) => {
         setActiveIndex(index)
       };
+
+
 
     return(
         <Container>
@@ -222,25 +219,25 @@ const AdminAllPayHistoryIllu = () => {
                           flexDirection: 'column',
                           height: 400,
                         }}
-                      >
-                        <DashboardChartTitle>{"Selected Year Income History"}</DashboardChartTitle>
-                        <DashboardChartTitle>{totalAmount + "$"}</DashboardChartTitle>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart width={400} height={400}>
-                            <Pie
-                              activeIndex={activeIndex}
-                              activeShape={renderActiveShape}
-                              data={pinChartdata}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={50}
-                              outerRadius={70}
-                              fill="#8884d8"
-                              dataKey="value"
-                              onMouseEnter={onPieEnter}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
+                    >
+                      <DashboardChartTitle>{"Selected Year Income History"}</DashboardChartTitle>
+                      <DashboardChartTitle>{totalAmount + "$"}</DashboardChartTitle>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart width={400} height={400}>
+                          <Pie
+                            activeIndex={activeIndex}
+                            activeShape={renderActiveShape}
+                            data={pinChartdata}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={70}
+                            fill="#8884d8"
+                            dataKey="value"
+                            onMouseEnter={onPieEnter}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
                     </Paper>
                   </Grid>
                  
