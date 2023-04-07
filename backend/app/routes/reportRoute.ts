@@ -6,8 +6,7 @@ import {
   getUserDailyReportsHandler,
   getUserWeeklyReportsHandler,
   getDailyReportStatusHandler,
-  getMonthlyReportStatusHandler,
-  getWeeklyReportStatusHandler
+  getReportStatusHandler,
 } from "../controllers/reportController";
 import { deserializeUser } from "../middleware/deserializeUser";
 import { requireUser } from "../middleware/requireUser";
@@ -16,6 +15,7 @@ import {
   createReportSchema,
   deleteReportSchema,
   updateReportSchema,
+  getReportStatusSchema,
 } from "../schemas/reportSchema";
 
 const router = express.Router();
@@ -38,11 +38,8 @@ router
   .route("/dailyreportstatus")
   .get(getDailyReportStatusHandler)
 router
-  .route("/weeklyreportstatus")
-  .get(getWeeklyReportStatusHandler)
-router
-  .route("/getmonthlyreportstatus")
-  .get(getMonthlyReportStatusHandler)
+  .route("/reportstatus/:reportId")
+  .get(validate(getReportStatusSchema), getReportStatusHandler);
 router
   .route("/:reportId")
   .patch(

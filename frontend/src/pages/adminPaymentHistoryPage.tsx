@@ -246,7 +246,6 @@ const AdminPaymentHistoryPage = () => {
         const submitDate = dateData[0];
         setSelectDateValue(submitDate)
       }
-      
     }
     }, [dateData]);
 

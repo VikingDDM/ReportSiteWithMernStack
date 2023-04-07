@@ -104,7 +104,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 const AdminDailyReportPage = () => {
 
     const { isLoading, isError, error, data: reportsWithUsers } = useGetDailyReportStatusQuery();
-    const [unreportedNames, setUnreportedNames] = useState([])
+    const [unreportedNames, setUnreportedNames] = useState([]);
  
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);

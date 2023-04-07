@@ -14,7 +14,6 @@ import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -22,7 +21,12 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import TableHead from '@mui/material/TableHead';
 import { styled } from '@mui/material/styles';
-import { useGetWeeklyReportStatusQuery } from '../redux/api/reportApi';
+import { useGetReportStatusQuery } from '../redux/api/reportApi';
+import dayjs, { Dayjs } from 'dayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
@@ -104,13 +108,16 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const AdminReportStatusPage = () => {
 
-    const { isLoading, isError, error, data: reportsWithUsers } = useGetWeeklyReportStatusQuery();
     const [reportStatus, setReportStatus] = React.useState([]);
- 
+    const [unreportedNames, setUnreportedNames] = React.useState([]);
+    const [dateValue, setDateValue] = React.useState<Dayjs | null>(dayjs());
+    const [selectDateValue, setSelectDateValue] = React.useState(new Date().toISOString());
+    const { isLoading, isError, error, data: reportStatusWithUsers } = useGetReportStatusQuery(selectDateValue);
+    console.log(reportStatusWithUsers)
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reportsWithUsers[0]?.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - reportStatusWithUsers[0]?.length) : 0;
 
     const handleChangePage = (
       event: React.MouseEvent<HTMLButtonElement> | null,
@@ -127,24 +134,30 @@ const AdminReportStatusPage = () => {
     };
 
     useEffect(() => {
-      if(reportsWithUsers !== undefined){
-        let reportStatusArray:any = [];
-        let unreportNum = "";
-        reportsWithUsers[1].map((userVal:any)=>{
-          const eachReports = reportsWithUsers[0].filter((reportVal:any) => {
-            return reportVal.Username === userVal.name;
+      if(reportStatusWithUsers !== undefined) {
+        let unreportedUserList:any = []
+        setReportStatus(reportStatusWithUsers[0])
+        reportStatusWithUsers[1].map((userValue:any) => {
+          const unreportFilter = reportStatusWithUsers[0].find((reportValue:any) => {
+            return reportValue.Username === userValue.name
           })
-          if(eachReports === undefined){
-            unreportNum = "6";
-          } else{
-            unreportNum = (6 - eachReports.length).toString();
+          if(unreportFilter === undefined) {
+            unreportedUserList.push(userValue.name);
           }
-          reportStatusArray.push({name:userVal.name, time:unreportNum})
         })
-        setReportStatus(reportStatusArray);
-        console.log(reportStatus)
+        setUnreportedNames(unreportedUserList);
       }
-    },[reportsWithUsers])
+    },[reportStatusWithUsers])
+
+    useEffect(() => {
+      if(dateValue !== null){
+        const virtualDate = dateValue.toDate();
+        const second = virtualDate.getSeconds() + (Math.random() * 10);
+        virtualDate.setSeconds(second);
+        const submitDate = virtualDate.toISOString();
+        setSelectDateValue(submitDate);
+      }
+      }, [dateValue]);
 
     useEffect(() => {
         if (isError) {
@@ -169,20 +182,17 @@ const AdminReportStatusPage = () => {
     
     return (
         <Container>
-           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Weekly Report Status </h5>
-           <Grid item xs={12} >
-              <Paper
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                {reportStatus.map((eachVal:any,key:any) => (
-                  <h5 key={key} style={{fontSize:"15px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>{eachVal.name} haven't reported {eachVal.time} times, this week</h5>
-                ))}
-              </Paper>
-            </Grid>
+           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Report History</h5>
+           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported this day </h5>
+           <LocalizationProvider dateAdapter={AdapterDayjs}>
+             <DemoContainer components={['DateTimePicker']}>
+               <DateTimePicker
+                 label="Controlled picker"
+                 value={dateValue}
+                 onChange={(newValue) => setDateValue(newValue)}
+               />
+             </DemoContainer>
+           </LocalizationProvider>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
                   <TableHead>
@@ -197,8 +207,8 @@ const AdminReportStatusPage = () => {
                   </TableHead>
                   <TableBody>
                     {(rowsPerPage > 0
-                      ? reportsWithUsers[0]?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      : reportsWithUsers[0]
+                      ? reportStatus.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      : reportStatus
                     )?.map((row:any, key: any) => (
                       <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                         <StyledTableCell component="th" scope="row">
@@ -232,7 +242,7 @@ const AdminReportStatusPage = () => {
                       <TablePagination
                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                         colSpan={6}
-                        count={reportsWithUsers[0]?.length}
+                        count={reportStatus.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         SelectProps={{

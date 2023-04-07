@@ -88,47 +88,18 @@ export const reportApi = createApi({
           results.data.reportsWithUsers,
       }),
 
-      getWeeklyReportStatus: builder.query<any, void>({
-        query() {
+      getReportStatus: builder.query<any, string>({
+        query(date) {
           return {
-            url: `/reports/WeeklyReportStatus`,
+            url: `/reports/reportstatus/${date}`,
             credentials: 'include',
           };
         },
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.map(({ id } : any) => ({
-                  type: 'Reports' as const,
-                  id,
-                })),
-                { type: 'Reports', id: 'LIST' },
-              ]
-            : [{ type: 'Reports', id: 'LIST' }],
-        transformResponse: (results: { data: { reportsWithUsers: any } }) =>
-          results.data.reportsWithUsers,
+        
+        transformResponse: (results: { data: { reportStatusWithUsers: any } }) =>
+          results.data.reportStatusWithUsers,
       }),
 
-      getMonthlyReportStatus: builder.query<any, void>({
-        query() {
-          return {
-            url: `/reports/monthlyreportstatus`,
-            credentials: 'include',
-          };
-        },
-        providesTags: (result) =>
-          result
-            ? [
-                ...result.map(({ id } : any) => ({
-                  type: 'Reports' as const,
-                  id,
-                })),
-                { type: 'Reports', id: 'LIST' },
-              ]
-            : [{ type: 'Reports', id: 'LIST' }],
-        transformResponse: (results: { data: { reportsWithUsers: any } }) =>
-          results.data.reportsWithUsers,
-      }),
 
       updateReport: builder.mutation<IReportResponse, { id: string; report: IUpdateReport }>(
         {
@@ -172,6 +143,5 @@ export const reportApi = createApi({
     useGetUserWeeklyReportsQuery,
     useGetUserDailyReportQuery,
     useGetDailyReportStatusQuery,
-    useGetWeeklyReportStatusQuery,
-    useGetMonthlyReportStatusQuery
+    useGetReportStatusQuery,
   } = reportApi;

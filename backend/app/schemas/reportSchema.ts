@@ -38,6 +38,11 @@ export const deleteReportSchema = object({
   ...params,
 });
 
+export const getReportStatusSchema = object({
+  ...params,
+});
+
 export type CreateReportInput = TypeOf<typeof createReportSchema>['body'];
 export type UpdateReportInput = TypeOf<typeof updateReportSchema>;
 export type DeleteReportInput = TypeOf<typeof deleteReportSchema>['params'];
+export type GetReportStatusInput = TypeOf<typeof getReportStatusSchema>['params'];
