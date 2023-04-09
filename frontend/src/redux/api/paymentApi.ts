@@ -14,6 +14,7 @@ export const paymentApi = createApi({
   endpoints: (builder) => ({  
      createPayPlan: builder.mutation<any, ICreatePayPlan>({
       query(payment) {
+
         return {
           url: '/payment/payplan',
           method: 'POST',

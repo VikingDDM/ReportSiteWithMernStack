@@ -10,17 +10,13 @@ type IAdminFreelancerInfoDeleteButtonProps = {
   }
 const AdminPcInfoDeleteButton = ({info_id, settingPcInfoID} : IAdminFreelancerInfoDeleteButtonProps) => {
 
-    const [deletePcInfo, { isLoading, error, isSuccess, isError }] = useDeletePcInfoMutation();
+    const [deletePcInfo, { isLoading, error, isError }] = useDeletePcInfoMutation();
 
     useEffect(() => {
       settingPcInfoID(); 
     }, [info_id])
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('PCInfo deleted successfully');
-        }
-    
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -45,7 +41,7 @@ const AdminPcInfoDeleteButton = ({info_id, settingPcInfoID} : IAdminFreelancerIn
     };
 
     return (
-        <Button onClick={() => { onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => { onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

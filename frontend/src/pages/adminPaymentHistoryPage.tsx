@@ -315,22 +315,22 @@ const AdminPaymentHistoryPage = () => {
                     <StyledTableCell component="th" scope="row">
                       {row?.created_at}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row.name}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row?.paymentWay}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row?.rate}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row?.realAmount}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="left">
+                    <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row?.amount}
                     </StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis"}} align="center">
+                    <StyledTableCell style={{ whiteSpace:"normal"}} align="center">
                       <Button onClick={() => handleShow(row)} >
                         <BorderColorIcon style={{color:"dodgerblue"}} />
                       </Button>

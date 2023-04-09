@@ -166,7 +166,7 @@ function AdminPayInfoTable() {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">Category</StyledTableCell>
+              <StyledTableCell align="center">Payment Method</StyledTableCell>
               <StyledTableCell align="center">Account</StyledTableCell>
               <StyledTableCell align="center">Date</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
@@ -178,20 +178,20 @@ function AdminPayInfoTable() {
               : payinfo
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row.username}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.category}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.account}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ width: 250,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row?.created_at}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                  <Button onClick={() => handleShow(row)} >
+                <StyledTableCell style={{ width: 120}} align="center">
+                  <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   

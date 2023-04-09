@@ -109,7 +109,13 @@ const UserWeeklyReportPage = () => {
 
     useEffect(() => {
       if(userWeeklyReports !== undefined) {
-        setReportTime(6-userWeeklyReports[0].length)
+        if(new Date().getDay() === 6) {
+          setReportTime(new Date().getDay()-userWeeklyReports[0].length-1);
+        } else if (new Date().getDay() === 0){
+          setReportTime(new Date().getDay()-userWeeklyReports[0].length);
+        } else {
+          setReportTime(new Date().getDay()-userWeeklyReports[0].length-1);
+        }
       }
     },[userWeeklyReports])
     
@@ -177,22 +183,22 @@ const UserWeeklyReportPage = () => {
                       : userWeeklyReports[0]
                     )?.map((row:any, key: any) => (
                       <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                        <StyledTableCell component="th" scope="row">
+                        <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                           {userWeeklyReports[1].name}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                           {row?.created_at}
                         </StyledTableCell>
                       </TableRow>

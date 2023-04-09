@@ -14,6 +14,8 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import Divider from '@mui/material/Divider';
+import {user} from '../redux/selectors/userSelector';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -80,6 +82,7 @@ const LandingPageHeader = () => {
 
   const dispatch = useAppDispatch(); 
   const opningstate = useAppSelector(sidebaropen);
+  const reportUser = useAppSelector(user);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [csspropdraw, setCsspropdraw] = useState("none");
@@ -126,7 +129,7 @@ const LandingPageHeader = () => {
           noWrap
           sx={{ flexGrow: 1 }}
         >
-          
+          Hello, {reportUser?.name}!
         </Typography>
         <Button
         id="basic-button"
@@ -145,7 +148,8 @@ const LandingPageHeader = () => {
           MenuListProps={{
             'aria-labelledby': 'basic-button',
           }}
-        >
+        > 
+          <Divider />
           <MenuItem onClick={onLogoutHandler}>Signout</MenuItem>
         </Menu>
       </Toolbar>

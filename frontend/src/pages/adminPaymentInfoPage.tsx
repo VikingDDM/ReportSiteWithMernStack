@@ -43,9 +43,9 @@ const style = {
 };
 
 const createPayInfoSchema = object({
-  username: string(),
-  category: string(),
-  account: string(),
+  username: string().min(1, 'Name is required'),
+  category: string().min(1, 'Pay method is required'),
+  account: string().min(1, 'Account is required'),
 })
 
 export type ICreatePayInfo = TypeOf<typeof createPayInfoSchema>;
@@ -61,6 +61,9 @@ const AdminPaymentInfoPage = () => {
       setValue('username', '');
       setValue('category', '');
       setValue('account', '');
+      clearErrors('username');
+      clearErrors('category');
+      clearErrors('account');
     };
       
 // report submitting section
@@ -73,17 +76,14 @@ const AdminPaymentInfoPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      formState: { isSubmitting, errors },
     } = methods;
 
-    const [createPayInfo, { isLoading, isError, error, isSuccess }] =
+    const [createPayInfo, { isLoading, isError, error }] =
     useCreatePayInfoMutation();
 
     useEffect(() => {
-      if (isSuccess) {
-        toast.success('Report created successfully');
-      }
-  
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
           (error as any).data.error.forEach((el: any) =>
@@ -140,25 +140,31 @@ const AdminPaymentInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['username']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
                           />  
-                          <p style={{margin:"unset", color:"gray"}}>Category</p>
+                          {errors.username && <p style={{margin:"unset", color:"red"}}>{errors.username.message}</p>}
+                          <p style={{margin:"unset", color:"gray"}}>Pay method</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['category']}
                             style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('category')}
                           />
+                          {errors.category && <p style={{margin:"unset", color:"red"}}>{errors.category.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>Account</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['account']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('account')}
                           />
+                          {errors.account && <p style={{margin:"unset", color:"red"}}>{errors.account.message}</p>}
                         </Paper>
                         <React.Fragment>
                           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

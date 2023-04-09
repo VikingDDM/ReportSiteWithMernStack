@@ -107,13 +107,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 const AdminReportStatusPage = () => {
-
+    const [weekend, setWeekend] = React.useState('');
     const [reportStatus, setReportStatus] = React.useState([]);
     const [unreportedNames, setUnreportedNames] = React.useState([]);
     const [dateValue, setDateValue] = React.useState<Dayjs | null>(dayjs());
     const [selectDateValue, setSelectDateValue] = React.useState(new Date().toISOString());
     const { isLoading, isError, error, data: reportStatusWithUsers } = useGetReportStatusQuery(selectDateValue);
-    console.log(reportStatusWithUsers)
+   
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -152,6 +152,9 @@ const AdminReportStatusPage = () => {
     useEffect(() => {
       if(dateValue !== null){
         const virtualDate = dateValue.toDate();
+        if(virtualDate.getDay() === 0 || virtualDate.getDay() === 6){
+          setWeekend("(It was weekend)")
+        }
         const second = virtualDate.getSeconds() + (Math.random() * 10);
         virtualDate.setSeconds(second);
         const submitDate = virtualDate.toISOString();
@@ -183,7 +186,7 @@ const AdminReportStatusPage = () => {
     return (
         <Container>
            <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Report History</h5>
-           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported this day </h5>
+           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported this day {weekend}</h5>
            <LocalizationProvider dateAdapter={AdapterDayjs}>
              <DemoContainer components={['DateTimePicker']}>
                <DateTimePicker
@@ -214,19 +217,19 @@ const AdminReportStatusPage = () => {
                         <StyledTableCell component="th" scope="row">
                           {row?.Username}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.created_at}
                         </StyledTableCell>
                       </TableRow>

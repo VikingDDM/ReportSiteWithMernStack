@@ -10,17 +10,13 @@ type IUserDailyReportDeleteButtonProps = {
   }
 const UserDailyReportDeleteButton = ({report_id, settingReportID} : IUserDailyReportDeleteButtonProps) => {
 
-    const [deletePost, { isLoading, error, isSuccess, isError }] = useDeleteReportMutation();
+    const [deletePost, { isLoading, error, isError }] = useDeleteReportMutation();
 
     useEffect(() => {
       settingReportID(); 
     }, [report_id])
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('Post deleted successfully');
-        }
-    
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -45,7 +41,7 @@ const UserDailyReportDeleteButton = ({report_id, settingReportID} : IUserDailyRe
     };
 
     return (
-        <Button onClick={() => {onDeleteHandler(report_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => {onDeleteHandler(report_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

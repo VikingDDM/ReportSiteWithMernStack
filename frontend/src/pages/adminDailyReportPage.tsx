@@ -31,7 +31,7 @@ const StyledTableCell = styled(TableCell)(() => ({
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
-      border: "1px solid grey"
+      border: "1px solid grey",
     },
 }));
   
@@ -105,6 +105,7 @@ const AdminDailyReportPage = () => {
 
     const { isLoading, isError, error, data: reportsWithUsers } = useGetDailyReportStatusQuery();
     const [unreportedNames, setUnreportedNames] = useState([]);
+    const [weekend, setWeekend] = useState('');
  
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -126,6 +127,9 @@ const AdminDailyReportPage = () => {
     };
 
     useEffect(() => {
+      if(new Date().getDay() === 0 || new Date().getDay() === 6){
+        setWeekend('(This is weekend)')
+      }
       if(reportsWithUsers !== undefined) {
         let unreportedUserList:any = []
         reportsWithUsers[1].map((userValue:any) => {
@@ -164,7 +168,7 @@ const AdminDailyReportPage = () => {
     return (
         <Container>
            <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Today's Roports</h5>
-           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported today </h5>
+           <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported today {weekend}</h5>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
                   <TableHead>
@@ -177,7 +181,7 @@ const AdminDailyReportPage = () => {
                       <StyledTableCell align="center">Date</StyledTableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>
+                  <TableBody style={{}}>
                     {(rowsPerPage > 0
                       ? reportsWithUsers[0]?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       : reportsWithUsers[0]
@@ -186,19 +190,19 @@ const AdminDailyReportPage = () => {
                         <StyledTableCell component="th" scope="row">
                           {row?.Username}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ wordBreak:"break-word",maxWidth: 120,whiteSpace:"normal" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,wordBreak:"break-word",whiteSpace:"normal"}} align="left">
                           {row?.created_at}
                         </StyledTableCell>
                       </TableRow>

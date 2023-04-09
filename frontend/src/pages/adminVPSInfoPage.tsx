@@ -43,9 +43,9 @@ const style = {
 };
 
 const createVpsInfoSchema = object({
-    username: string(),
-    vpsPassword: string(),
-    vpsUrl: string(),
+    username: string().min(1, 'Name is required'),
+    vpsPassword: string().min(1, 'Password is required'),
+    vpsUrl: string().min(1, 'Url is required'),
 })
 
 export type ICreateVpsInfo = TypeOf<typeof createVpsInfoSchema>;
@@ -60,6 +60,9 @@ const AdminVPSInfoPage = () => {
       setValue('username', '');
       setValue('vpsPassword', '');
       setValue('vpsUrl', '');
+      clearErrors('username');
+      clearErrors('vpsPassword');
+      clearErrors('vpsUrl');
     };
       
 // report submitting section
@@ -72,15 +75,13 @@ const AdminVPSInfoPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      formState: { isSubmitting, errors },
     } = methods;
 
-    const [createVpsInfo, { isLoading, isError, error, isSuccess }] = useCreateVpsInfoMutation();
+    const [createVpsInfo, { isLoading, isError, error }] = useCreateVpsInfoMutation();
 
     useEffect(() => {
-      if (isSuccess) {
-        toast.success('PCInfo created successfully');
-      }
   
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
@@ -138,25 +139,31 @@ const AdminVPSInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['username']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
                           />  
+                          {errors.username && <p style={{margin:"unset", color:"red"}}>{errors.username.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>Password</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['vpsPassword']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('vpsPassword')}
                           />
+                          {errors.vpsPassword && <p style={{margin:"unset", color:"red"}}>{errors.vpsPassword.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>Url</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['vpsUrl']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('vpsUrl')}
                           />
+                          {errors.vpsUrl && <p style={{margin:"unset", color:"red"}}>{errors.vpsUrl.message}</p>}
                         </Paper>
                         <React.Fragment>
                           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

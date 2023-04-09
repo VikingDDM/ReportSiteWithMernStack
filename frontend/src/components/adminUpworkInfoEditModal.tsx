@@ -61,7 +61,6 @@ const AdminUpworkInfoEditModal = ({modalShow, handleModalClose, upworkInfo_id, d
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Updated successfully");
           handleModalClose();
         }
     

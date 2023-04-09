@@ -2,22 +2,19 @@ import { date, number, object, string, TypeOf } from 'zod';
 
 export const createPayPlanSchema = object({
     body: object({
-      name: string({ required_error: 'Content is required'}),
-      plan: string({
-        required_error: 'Value is required',
-      }),
+      name: string(),
+      plan: string(),
+      payPlanDate: string(),
     }),
 });
 
 export const createPayHistorySchema = object({
     body: object({
-      name: string({ required_error: 'Content is required'}),
+      name: string(),
       paymentWay: string(),
       realAmount: string(),
       rate: string(),
-      amount: string({
-        required_error: 'Value is required',
-      }),
+      amount: string(),
     }),
 });
 
@@ -41,6 +38,7 @@ export const updatePayPlanSchema = object({
     body: object({
       name: string(),
       plan: string(),
+      payPlanDate: string(),
     }).partial(),
   });
 

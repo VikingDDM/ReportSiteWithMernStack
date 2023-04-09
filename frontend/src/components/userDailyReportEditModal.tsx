@@ -67,7 +67,6 @@ const UserDailyReportEditModal = ({modalShow, handleModalClose, report_id, defau
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Post updated successfully");
           handleModalClose();
         }
     

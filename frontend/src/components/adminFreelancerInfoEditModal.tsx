@@ -61,7 +61,6 @@ const AdminFreelancerInfoEditModal = ({modalShow, handleModalClose, freelancerIn
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Post updated successfully");
           handleModalClose();
         }
     

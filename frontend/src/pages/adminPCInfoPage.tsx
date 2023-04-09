@@ -43,9 +43,9 @@ const style = {
 };
 
 const createPcInfoSchema = object({
-    username: string(),
-    deviceName: string(),
-    hardware: string(),
+    username: string().min(1, 'Name is required'),
+    deviceName: string().min(1, 'DeviceName is required'),
+    hardware: string().min(1, 'Hardware is required'),
 })
 
 export type ICreatePcInfo = TypeOf<typeof createPcInfoSchema>;
@@ -60,6 +60,9 @@ const AdminPCInfoPage = () => {
       setValue('username', '');
       setValue('deviceName', '');
       setValue('hardware', '');
+      clearErrors('username');
+      clearErrors('deviceName');
+      clearErrors('hardware');
     };
       
 // report submitting section
@@ -72,16 +75,14 @@ const AdminPCInfoPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      formState: { isSubmitting, errors }
     } = methods;
 
-    const [createPcInfo, { isLoading, isError, error, isSuccess }] =
+    const [createPcInfo, { isLoading, isError, error}] =
     useCreatePcInfoMutation();
 
     useEffect(() => {
-      if (isSuccess) {
-        toast.success('PCInfo created successfully');
-      }
   
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
@@ -139,25 +140,31 @@ const AdminPCInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['username']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
                           />  
+                          {errors.username && <p style={{margin:"unset", color:"red"}}>{errors.username.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>DeviceName</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['deviceName']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('deviceName')}
                           />
+                          {errors.deviceName && <p style={{margin:"unset", color:"red"}}>{errors.deviceName.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>Hardware</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['hardware']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('hardware')}
                           />
+                          {errors.hardware && <p style={{margin:"unset", color:"red"}}>{errors.hardware.message}</p>}
                         </Paper>
                         <React.Fragment>
                           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

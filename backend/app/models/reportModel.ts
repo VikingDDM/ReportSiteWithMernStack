@@ -29,19 +29,19 @@ export class Report {
   @prop()
   id: string;
 
-  @prop({ required: true })
+  @prop()
   Username: string;
 
-  @prop({ required: true })
+  @prop()
   Payment: string;
 
-  @prop({ required: true })
+  @prop()
   Project: string;
 
-  @prop({ required: true })
+  @prop()
   Study: string;
 
-  @prop({ required: true })
+  @prop()
   Extra: string;
 
   @prop({ required: true, ref: () => User })

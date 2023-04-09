@@ -64,7 +64,6 @@ const AdminVpsInfoEditModal = ({modalShow, handleModalClose, vpsInfo_id, default
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Post updated successfully");
           handleModalClose();
         }
     

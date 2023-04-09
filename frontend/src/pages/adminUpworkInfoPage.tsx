@@ -43,8 +43,8 @@ const style = {
 };
 
 const createUpworkInfoSchema = object({
-    username: string(),
-    account: string(),
+    username: string().min(1, 'Name is required'),
+    account: string().min(1, 'Account is required'),
 })
 
 export type ICreateUpworkInfo = TypeOf<typeof createUpworkInfoSchema>;
@@ -58,6 +58,8 @@ const AdminUpworkInfoPage = () => {
       setModelShow(false);
       setValue('username', '');
       setValue('account', '');
+      clearErrors('username');
+      clearErrors('account');
     };
       
 // report submitting section
@@ -70,17 +72,14 @@ const AdminUpworkInfoPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      formState: { isSubmitting, errors },
     } = methods;
 
-    const [createUpworkInfo, { isLoading, isError, error, isSuccess }] =
+    const [createUpworkInfo, { isLoading, isError, error}] =
     useCreateUpworkInfoMutation();
 
     useEffect(() => {
-      if (isSuccess) {
-        toast.success('Created successfully');
-      }
-  
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
           (error as any).data.error.forEach((el: any) =>
@@ -135,17 +134,21 @@ const AdminUpworkInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['username']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
                           />  
+                          {errors.username && <p style={{margin:"unset", color:"red"}}>{errors.username.message}</p>}
                           <p style={{margin:"unset", color:"gray"}}>Account</p>
                           <TextField
                             fullWidth 
                             rows={2}
                             multiline
+                            error={!!errors['account']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('account')}
                           />
+                          {errors.account && <p style={{margin:"unset", color:"red"}}>{errors.account.message}</p>}
                         </Paper>
                         <React.Fragment>
                           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

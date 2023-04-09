@@ -176,7 +176,7 @@ export const getUserWeeklyReportsHandler = async (
       millisecondAfter = Date.parse(today.toLocaleString()) - 86400000 * weeklyDay;
     }
     
-    const millisecondBefore = millisecondAfter + 86400000 * 6;
+    const millisecondBefore = millisecondAfter + 86400000 * 5;
 
     weeklyFirstDay.setTime(millisecondAfter + 86400000);
     weeklyLastDay.setTime(millisecondBefore);

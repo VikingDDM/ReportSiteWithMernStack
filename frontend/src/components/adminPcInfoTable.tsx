@@ -23,7 +23,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import TableHead from '@mui/material/TableHead';
 import { styled } from '@mui/material/styles';
 import { useGetAllPcInfoQuery } from '../redux/api/pcInfoApi';
-import AdminPcInfoEditModel from './adminPcInfoEditModel';
+import AdminPcInfoEditModal from './adminPcInfoEditModal';
 import Button from '@mui/material/Button';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -178,20 +178,20 @@ function AdminPcInfoTable() {
               : pcInfo
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row.username}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.deviceName}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.hardware}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ width: 250,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row?.created_at}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                  <Button onClick={() => handleShow(row)} >
+                <StyledTableCell style={{ width: 120}} align="center">
+                  <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   
@@ -227,7 +227,7 @@ function AdminPcInfoTable() {
             </TableRow>
           </TableFooter>
         </Table>
-        <AdminPcInfoEditModel 
+        <AdminPcInfoEditModal 
                   modalShow = {show} 
                   handleModalClose={handleClose}   
                   pcInfo_id = {dataid}

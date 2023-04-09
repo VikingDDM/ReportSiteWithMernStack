@@ -36,6 +36,7 @@ export interface ChildProps{
 function UserDailyReportTable(props: ChildProps) {
    
     const { isLoading, isError, error, data: userdailyreports } = useGetUserDailyReportQuery();
+
     const [dataid, setDataid] = React.useState("");
     const [dataPayment, setDataPayment] = React.useState("");
     const [dataProject, setDataProject] = React.useState("");
@@ -52,8 +53,8 @@ function UserDailyReportTable(props: ChildProps) {
                                        setDataExtra(data.Extra);} 
     const handleClose = () => {setShow(false);}
     useEffect(() => {
-      if(userdailyreports !== undefined || new Date().getDay() === 0){
-       if(userdailyreports[0].length > 0){
+      if(userdailyreports !== undefined){
+       if(userdailyreports[0].length > 0 || new Date().getDay() === 0 || new Date().getDay() === 6 || new Date().getHours() <18){
         buttonAble = "none"
        } else{
         buttonAble = "block"
@@ -100,26 +101,26 @@ function UserDailyReportTable(props: ChildProps) {
           <TableBody>
             { userdailyreports[0]?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {userdailyreports[1].name}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.Payment}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.Project}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.Study}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row?.Extra}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row?.created_at}
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button onClick={() => handleShow(row)} >
+                <StyledTableCell style={{ width: 120}} align="center">
+                  <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   

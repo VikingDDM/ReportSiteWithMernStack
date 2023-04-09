@@ -9,13 +9,9 @@ type IAdminPaymentStatusDeleteButtonProps = {
   }
 const UserPayPlanDeleteButton = ({ payment_id} : IAdminPaymentStatusDeleteButtonProps) => {
 
-    const [deletePayment, { isLoading, error, isSuccess, isError }] = useDeletePayPlanMutation();
+    const [deletePayment, { isLoading, error, isError }] = useDeletePayPlanMutation();
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('Deleted successfully');
-        }
-    
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -39,7 +35,7 @@ const UserPayPlanDeleteButton = ({ payment_id} : IAdminPaymentStatusDeleteButton
     };
 
     return (
-        <Button onClick={() => {onDeleteHandler()}}>
+        <Button style={{minWidth:"unset"}} onClick={() => {onDeleteHandler()}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

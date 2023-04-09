@@ -10,17 +10,13 @@ type IAdminUpworkInfoDeleteButtonProps = {
   }
 const AdminUpworkDeleteButton = ({info_id, settingUpworkInfoID} : IAdminUpworkInfoDeleteButtonProps) => {
 
-    const [deleteUpworkInfo, { isLoading, error, isSuccess, isError }] = useDeleteUpworkInfoMutation();
+    const [deleteUpworkInfo, { isLoading, error, isError }] = useDeleteUpworkInfoMutation();
 
     useEffect(() => {
         settingUpworkInfoID(); 
     }, [info_id])
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('Deleted successfully');
-        }
-    
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -45,7 +41,7 @@ const AdminUpworkDeleteButton = ({info_id, settingUpworkInfoID} : IAdminUpworkIn
     };
 
     return (
-        <Button onClick={() => { onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => { onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

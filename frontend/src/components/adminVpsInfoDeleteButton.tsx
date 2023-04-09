@@ -10,17 +10,13 @@ type IAdminFreelancerInfoDeleteButtonProps = {
   }
 const AdminVpsInfoDeleteButton = ({info_id, settingVpsInfoID} : IAdminFreelancerInfoDeleteButtonProps) => {
 
-    const [deleteVpsInfo, { isLoading, error, isSuccess, isError }] = useDeleteVpsInfoMutation();
+    const [deleteVpsInfo, { isLoading, error, isError }] = useDeleteVpsInfoMutation();
     
     useEffect(() => {
         settingVpsInfoID(); 
     }, [info_id])
     
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('VPSInfo deleted successfully');
-        }
-    
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -44,7 +40,7 @@ const AdminVpsInfoDeleteButton = ({info_id, settingVpsInfoID} : IAdminFreelancer
     };
 
     return (
-        <Button onClick={() => { onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => { onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

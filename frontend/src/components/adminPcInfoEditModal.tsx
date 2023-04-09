@@ -40,7 +40,7 @@ const updatePcInfoSchema = object({
 
 export type IUpdatePcInfo = TypeOf<typeof updatePcInfoSchema>;
 
-const AdminPcInfoEditModel = ({modalShow, handleModalClose, pcInfo_id, defaultValueA, defaultValueB, defaultValueC } : IUserPcInfoEditModelProps) => {
+const AdminPcInfoEditModal = ({modalShow, handleModalClose, pcInfo_id, defaultValueA, defaultValueB, defaultValueC } : IUserPcInfoEditModelProps) => {
 
     const [updatePcInfo, { isLoading, isError, error, isSuccess }] = useUpdatePcInfoMutation();
     
@@ -64,7 +64,6 @@ const AdminPcInfoEditModel = ({modalShow, handleModalClose, pcInfo_id, defaultVa
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Post updated successfully");
           handleModalClose();
         }
     
@@ -153,4 +152,4 @@ const AdminPcInfoEditModel = ({modalShow, handleModalClose, pcInfo_id, defaultVa
     )
 }
 
-export default AdminPcInfoEditModel;
+export default AdminPcInfoEditModal;

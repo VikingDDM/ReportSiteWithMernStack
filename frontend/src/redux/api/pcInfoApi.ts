@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { IPcInfoResponse } from './types';
 import { ICreatePcInfo } from '../../pages/adminPCInfoPage';
-import { IUpdatePcInfo } from '../../components/adminPcInfoEditModel';
+import { IUpdatePcInfo } from '../../components/adminPcInfoEditModal';
 
 export const pcInfoApi = createApi({
   reducerPath: 'pcInfoApi',

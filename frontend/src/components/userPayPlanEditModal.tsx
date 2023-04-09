@@ -61,7 +61,6 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Updated successfully");
           handleModalClose();
         }
     

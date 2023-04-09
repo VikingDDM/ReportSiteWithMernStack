@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import SwipeableViews from "react-swipeable-views";
 import UserDailyReportTable from '../components/userDailyReportTable';
 import { useAppSelector } from '../redux/hooks';
-import {user} from '../redux/selectors/userSelector'
+import {user} from '../redux/selectors/userSelector';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.4rem;
@@ -52,10 +52,10 @@ const steps = ['How much income?', 'How is your project going?', 'What did you s
 // const reportTags = ['Payment','Project','Study','Extra'];
 
 const createReportSchema = object({
-  Payment: string(),
-  Project: string(),
-  Study: string(),
-  Extra: string(),
+  Payment: string().min(1, 'Your incoming status is required'),
+  Project: string().min(1, 'Your project status is required'),
+  Study: string().min(1, 'Your study status is required'),
+  Extra: string().min(1, 'Extra content is required'),
 })
 
 const createReportWithUserSchema = object({
@@ -70,9 +70,15 @@ export type ICreateReportWithUser = TypeOf<typeof createReportWithUserSchema>;
 export type ICreateReport = TypeOf<typeof createReportSchema>;
 
 const UserDailyReportPage = () => {
-    const [buttonAtive, setButtonActive] = React.useState('')
+    const [buttonAtive, setButtonActive] = React.useState('');
     const reportUser = useAppSelector(user);
-
+    const [headerText, setHeaderText] = React.useState('');
+    
+    useEffect(() => {
+      if(new Date().getDay() === 0 || new Date().getDay() === 6) {
+        setHeaderText('This is weekend. Have a rest.')
+      } else if(new Date().getHours() <18){setHeaderText('This is not report time.')}
+    },[])
 // model action section
     const [activeStep, setActiveStep] = React.useState(0);
     const [modelShow, setModelShow] = useState(false);
@@ -110,6 +116,10 @@ const UserDailyReportPage = () => {
       setValue('Project', '');
       setValue('Study', '');
       setValue('Extra', '');
+      clearErrors('Payment');
+      clearErrors('Project');
+      clearErrors('Study');
+      clearErrors('Extra');
     };
       
     const handlePaymentResult = (e:any) => {
@@ -135,7 +145,8 @@ const UserDailyReportPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      formState: { isSubmitting, errors },
     } = methods;
 
     register('Payment', {
@@ -156,7 +167,6 @@ const UserDailyReportPage = () => {
 
     useEffect(() => {
       if (isSuccess) {
-        toast.success('Report created successfully');
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
   
@@ -202,6 +212,8 @@ const UserDailyReportPage = () => {
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Please report in a few minutes</h5>
+          <h5 style={{fontSize:"15px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>{headerText}</h5>
+          
           <LoadingButton onClick={modelHandleShow} style={{display:buttonAtive}}>
             Report
           </LoadingButton>
@@ -247,12 +259,13 @@ const UserDailyReportPage = () => {
                           );
                         })}
                         <Paper style={{boxShadow:"none"}}>
-                          <p style={{margin:"unset", color:"gray"}}>Payment</p>
+                          <p style={{margin:"unset", color:"gray"}}>Income</p>
                           <TextField
                             fullWidth 
                             defaultValue={reportResult[0]}
                             rows={2}
                             multiline
+                            error={!!errors['Payment']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('Payment')}
                           />  
@@ -262,6 +275,7 @@ const UserDailyReportPage = () => {
                             defaultValue={reportResult[1]}
                             rows={2}
                             multiline
+                            error={!!errors['Project']}
                             style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('Project')}
                           />
@@ -271,6 +285,7 @@ const UserDailyReportPage = () => {
                             defaultValue={reportResult[2]}
                             rows={2}
                             multiline
+                            error={!!errors['Study']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('Study')}
                           />
@@ -280,6 +295,7 @@ const UserDailyReportPage = () => {
                             defaultValue={reportResult[3]}
                             rows={2}
                             multiline
+                            error={!!errors['Extra']}
                             style={{ marginTop:"8px", paddingRight:"10px", boxShadow:"none !important", paddingLeft:"10px"}}
                             {...register('Extra')}
                           />

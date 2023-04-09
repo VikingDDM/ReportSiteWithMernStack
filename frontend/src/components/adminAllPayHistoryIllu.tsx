@@ -68,23 +68,23 @@ function createData(time: string, amount?: number) {
   const months = ['Jan','Feb','Mar','Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   // PinChart
-  const pinChartdata:any = [{name:"no name", value:100}];
+  const pinChartdata:any = [{name:"no name", value:0.1}];
   const renderActiveShape = (props:any) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
     const sin = Math.sin(-RADIAN * midAngle);
     const cos = Math.cos(-RADIAN * midAngle);
-    const sx = cx + (outerRadius + 8) * cos;
-    const sy = cy + (outerRadius + 8) * sin;
-    const mx = cx + (outerRadius + 10) * cos;
-    const my = cy + (outerRadius + 10) * sin;
+    const sx = cx + (outerRadius + 4) * cos;
+    const sy = cy + (outerRadius + 4) * sin;
+    const mx = cx + (outerRadius + 4) * cos;
+    const my = cy + (outerRadius + 4) * sin;
     const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
   
     return (
       <g>
-        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+        <text x={cx} y={cy} dy={4} textAnchor="middle" fill={fill}>
           {payload.name}
         </text>
         <Sector
@@ -107,9 +107,9 @@ function createData(time: string, amount?: number) {
         />
         <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
         <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${value}$`}</text>
-        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-          {`( ${(percent * 100).toFixed(2)}%)`}
+        <text x={ex + (cos >= 0 ? 1 : -1) * 10} y={ey} textAnchor={textAnchor} fill="#333">{`${value}$`}</text>
+        <text x={ex + (cos >= 0 ? 1 : -1) * 10} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+          {`${(percent * 100).toFixed(2)}%`}
         </text>
       </g>
     );
@@ -186,7 +186,7 @@ const AdminAllPayHistoryIllu = (payHistory:any) => {
                         height: 400,
                       }}
                     >
-                      <DashboardChartTitle>{"Selected Year Monthly Income History"}</DashboardChartTitle>
+                      <DashboardChartTitle>{"Monthly Income History"}</DashboardChartTitle>
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart
                           width={500}
@@ -220,7 +220,7 @@ const AdminAllPayHistoryIllu = (payHistory:any) => {
                           height: 400,
                         }}
                     >
-                      <DashboardChartTitle>{"Selected Year Income History"}</DashboardChartTitle>
+                      <DashboardChartTitle>{"Yearly Income History"}</DashboardChartTitle>
                       <DashboardChartTitle>{totalAmount + "$"}</DashboardChartTitle>
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart width={400} height={400}>
@@ -243,7 +243,7 @@ const AdminAllPayHistoryIllu = (payHistory:any) => {
                  
                   <Grid item xs={12}>
                     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 400,}}>
-                    <DashboardChartTitle>{"Selected Month Income History"}</DashboardChartTitle>
+                    <DashboardChartTitle>{"Monthly Individual Income History"}</DashboardChartTitle>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                         width={200}

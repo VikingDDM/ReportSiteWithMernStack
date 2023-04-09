@@ -13,7 +13,6 @@ const AdminPaymentStatusDeleteButton = ({ payment_id} : IAdminPaymentStatusDelet
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success('Deleted successfully');
           window.location.reload();
         }
     

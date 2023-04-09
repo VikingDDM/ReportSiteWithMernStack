@@ -44,30 +44,10 @@ export const getPayPlanHandler = async (
   next: NextFunction
 ) => {
   try {
-    const today = new Date();
-    const firstDay = new Date();
-    const lastDay = new Date();
     const user_id = res.locals.user._id;
     const user = await findUserById(user_id)
-
-    const thisMonth = today.getMonth();
-    
-    const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
-    const nextMonth = thisMonth === 11 ? 0 : thisMonth + 1;
-    
-
-    if(today.getDate() <= 24) {
-        firstDay.setMonth(lastMonth);          
-        lastDay.setMonth(thisMonth);
-      } else {
-        firstDay.setMonth(thisMonth); 
-        lastDay.setMonth(nextMonth);}
-   
-    firstDay.setDate(26); firstDay.setHours(-7); firstDay.setMinutes(0);
-    lastDay.setDate(25); lastDay.setHours(16); lastDay.setMinutes(59);
     
     const query = {
-      created_at: { $gte: firstDay, $lte: lastDay },
       plan: { $ne: null},
       name: {$eq: user.name}
     }
@@ -227,8 +207,9 @@ export const createPayHistoryHandler = async (
         created_at: { $gte: firstDay, $lte: lastDay },
         eachMonthlyAmount: { $ne: null}
       }
+      const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth()).toString();
       const queryMonthlyPayPlan = {
-        created_at: { $gte: firstDay, $lte: lastDay },
+        payPlanDate: { $eq: payPlanQueryDate },
         plan: { $ne: null},
       }
       const monthlyAmounts:any = await findPayment(queryMonthlyAmount);
@@ -245,38 +226,7 @@ export const createPayHistoryHandler = async (
   
       realMonthlyAmounts = monthlyAmounts[0];
       
-      const realMonthlyPayPlan:any = [];
-      monthlyPayPlan.sort( (p1:any, p2:any) => {
-        if (p1.created_at > p2.created_at) return -1;
-        if (p1.created_at < p2.created_at) return 1;
-        return 0;
-      });
-      monthlyPayPlan.sort( (p1:any, p2:any) => {
-        if (p1.name < p2.name) return 1;
-        if (p1.name > p2.name) return -1;
-        return 0;
-      });
-      monthlyPayPlan.push(monthlyPayPlan[0])
-  
-      let planNums : any = [];
-      let planNum = 1;
-      monthlyPayPlan.map((eachPlan, key) => {
-        if(key-1 >= 0)
-        if(eachPlan.name === monthlyPayPlan[key-1].name){ planNum++ }
-        else {planNums.push(planNum); planNum = 1}
-        
-      })
-      let planNumArg = 0;
-      planNums.map((eachPlanNum:any) => {
-        planNumArg += eachPlanNum
-        if(today.getDate() <= 24){
-          if(eachPlanNum === thisMonth + 1){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-        } else {
-          if(eachPlanNum === thisMonth + 2){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-        }
-        
-      })
-      realMonthlyPayPlan.map((eachPlan:any) => {
+      monthlyPayPlan.map((eachPlan:any) => {
         const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
           return value.name === eachPlan.name;
         })
@@ -289,7 +239,7 @@ export const createPayHistoryHandler = async (
          else {realEachMonthlyAmounts.push(individualAmounts[0]);}
       })
       const allUsers = await findAllUsers();
-      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, realMonthlyPayPlan, allUsers]
+      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers]
 
       res.status(201).json({
         status: "success",
@@ -575,8 +525,9 @@ export const updatePaymentHistoryHandler = async (
         created_at: { $gte: firstDay, $lte: lastDay },
         eachMonthlyAmount: { $ne: null}
       }
+      const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth()).toString();
       const queryMonthlyPayPlan = {
-        created_at: { $gte: firstDay, $lte: lastDay },
+        payPlanDate: { $eq: payPlanQueryDate },
         plan: { $ne: null},
       }
       const monthlyAmounts:any = await findPayment(queryMonthlyAmount);
@@ -593,38 +544,7 @@ export const updatePaymentHistoryHandler = async (
   
       realMonthlyAmounts = monthlyAmounts[0];
       
-      const realMonthlyPayPlan:any = [];
-      monthlyPayPlan.sort( (p1:any, p2:any) => {
-        if (p1.created_at > p2.created_at) return -1;
-        if (p1.created_at < p2.created_at) return 1;
-        return 0;
-      });
-      monthlyPayPlan.sort( (p1:any, p2:any) => {
-        if (p1.name < p2.name) return 1;
-        if (p1.name > p2.name) return -1;
-        return 0;
-      });
-      monthlyPayPlan.push(monthlyPayPlan[0])
-  
-      let planNums : any = [];
-      let planNum = 1;
-      monthlyPayPlan.map((eachPlan, key) => {
-        if(key-1 >= 0)
-        if(eachPlan.name === monthlyPayPlan[key-1].name){ planNum++ }
-        else {planNums.push(planNum); planNum = 1}
-        
-      })
-      let planNumArg = 0;
-      planNums.map((eachPlanNum:any) => {
-        planNumArg += eachPlanNum
-        if(today.getDate() <= 24){
-          if(eachPlanNum === thisMonth + 1){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-        } else {
-          if(eachPlanNum === thisMonth + 2){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-        }
-        
-      })
-      realMonthlyPayPlan.map((eachPlan:any) => {
+      monthlyPayPlan.map((eachPlan:any) => {
         const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
           return value.name === eachPlan.name;
         })
@@ -637,7 +557,7 @@ export const updatePaymentHistoryHandler = async (
          else {realEachMonthlyAmounts.push(individualAmounts[0]);}
       })
       
-      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, realMonthlyPayPlan, allUsers, updatedPayment.created_at]
+      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers, updatedPayment.created_at]
   
       res.status(200).json({
         status: "success",
@@ -791,8 +711,9 @@ export const getAllMonthlyPaymentHandler = async (
       created_at: { $gte: firstDay, $lte: lastDay },
       eachMonthlyAmount: { $ne: null}
     }
+    const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth()).toString();
     const queryMonthlyPayPlan = {
-      created_at: { $gte: firstDay, $lte: lastDay },
+      payPlanDate: { $eq: payPlanQueryDate },
       plan: { $ne: null},
     }
     const monthlyAmounts:any = await findPayment(queryMonthlyAmount);
@@ -808,39 +729,8 @@ export const getAllMonthlyPaymentHandler = async (
     });
 
     realMonthlyAmounts = monthlyAmounts[0];
-    
-    const realMonthlyPayPlan:any = [];
-    monthlyPayPlan.sort( (p1:any, p2:any) => {
-      if (p1.created_at > p2.created_at) return -1;
-      if (p1.created_at < p2.created_at) return 1;
-      return 0;
-    });
-    monthlyPayPlan.sort( (p1:any, p2:any) => {
-      if (p1.name < p2.name) return 1;
-      if (p1.name > p2.name) return -1;
-      return 0;
-    });
-    monthlyPayPlan.push(monthlyPayPlan[0])
 
-    let planNums : any = [];
-    let planNum = 1;
-    monthlyPayPlan.map((eachPlan, key) => {
-      if(key-1 >= 0)
-      if(eachPlan.name === monthlyPayPlan[key-1].name){ planNum++ }
-      else {planNums.push(planNum); planNum = 1}
-      
-    })
-    let planNumArg = 0;
-    planNums.map((eachPlanNum:any) => {
-      planNumArg += eachPlanNum
-      if(today.getDate() <= 24){
-        if(eachPlanNum === thisMonth + 1){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-      } else {
-        if(eachPlanNum === thisMonth + 2){realMonthlyPayPlan.push(monthlyPayPlan[planNumArg])}
-      }
-      
-    })
-    realMonthlyPayPlan.map((eachPlan:any) => {
+    monthlyPayPlan.map((eachPlan:any) => {
       const individualAmounts =  eachMonthlyAmounts.filter((value:any) => {
         return value.name === eachPlan.name;
       })
@@ -853,7 +743,7 @@ export const getAllMonthlyPaymentHandler = async (
        else {realEachMonthlyAmounts.push(individualAmounts[0]);}
     })
     const allUsers = await findAllUsers();
-    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, realMonthlyPayPlan, allUsers]
+    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers]
     res.status(200).json({
       status: "success",
       data: {

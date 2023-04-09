@@ -26,6 +26,7 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
 
   const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery(null);
   const payHistory = useAppSelector(allPaymentHistory);
+  console.log(payHistory)
 
   useEffect(() => {
     let iniChartData :any = [];

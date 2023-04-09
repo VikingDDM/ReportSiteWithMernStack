@@ -107,7 +107,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 const monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export interface ChildProps{
-    setBtnAble: (btnAble: string) => void
+    setPlanSubmitAble: (payPlanWhen: any) => void
 }
    
 function UserPayPlanTable( props: ChildProps) {
@@ -121,7 +121,7 @@ function UserPayPlanTable( props: ChildProps) {
     const [show, setShow] = React.useState(false);
     const thisMonth = new Date().getMonth() + 1;
     const thisDay = new Date().getDate();
-    let buttonAble : string;
+
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - payPlan?.length) : 0;
 
@@ -145,11 +145,14 @@ function UserPayPlanTable( props: ChildProps) {
       setPage(0);
     };
     useEffect(() => {
-        if(thisMonth === payPlan?.length&& thisDay <= 25 || thisMonth < payPlan?.length && thisDay > 25){
-          buttonAble = "none";
-          } else{ buttonAble = "block"; }
+      let payPlanDates:any = [];
+        if(payPlan?.length !== 0){
+          payPlan?.map((eachPayPlan : any) => {
+            payPlanDates.push(eachPayPlan.payPlanDate)
+          })
+        } 
         
-        props.setBtnAble(buttonAble)
+        props.setPlanSubmitAble(payPlanDates)
     }, [payPlan])
 
     useEffect(() => {
@@ -179,8 +182,8 @@ function UserPayPlanTable( props: ChildProps) {
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">Plan</StyledTableCell>
               <StyledTableCell align="center">Date</StyledTableCell>
+              <StyledTableCell align="center">Plan</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -190,17 +193,17 @@ function UserPayPlanTable( props: ChildProps) {
               : payPlan
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row.name}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
+                  {monthName[parseInt((row?.payPlanDate).slice(4,5))] + " " + (row?.payPlanDate).slice(0,4)}
+                </StyledTableCell>
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {row?.plan}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace: "nowrap",textOverflow: "ellipsis",overflow: "hidden" }} align="left">
-                  {monthName[key]}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button onClick={() => handleShow(row)} >
+                <StyledTableCell align="center" style={{width: 120}}>
+                  <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   <UserPayPlanDeleteButton payment_id={row?._id} />
@@ -235,12 +238,12 @@ function UserPayPlanTable( props: ChildProps) {
             </TableRow>
           </TableFooter>
         </Table>
-        <AdminPayPlanEditModal 
+        {/* <AdminPayPlanEditModal 
                   modalShow = {show} 
                   handleModalClose={handleClose}   
                   payplan_id = {dataid}
                   defaultValueA = {dataName} 
-                  defaultValueB = {dataPlan} />
+                  defaultValueB = {dataPlan} /> */}
       </TableContainer>
     );
   }

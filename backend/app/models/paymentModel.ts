@@ -34,6 +34,9 @@ export class Payment {
   plan: string;
 
   @prop()
+  payPlanDate: string;
+
+  @prop()
   paymentWay: string;
 
   @prop()

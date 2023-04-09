@@ -10,16 +10,13 @@ type IAdminPayInfoDeleteButtonProps = {
   }
 const AdminPayInfoDeleteButton = ({info_id, settingPayInfoID} : IAdminPayInfoDeleteButtonProps) => {
 
-    const [deletePayInfo, { isLoading, error, isSuccess, isError }] = useDeletePayInfoMutation();
+    const [deletePayInfo, { isLoading, error, isError }] = useDeletePayInfoMutation();
 
     useEffect(() => {
       settingPayInfoID(); 
     }, [info_id])
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('Post deleted successfully');
-        }
     
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
@@ -45,7 +42,7 @@ const AdminPayInfoDeleteButton = ({info_id, settingPayInfoID} : IAdminPayInfoDel
     };
 
     return (
-        <Button onClick={() => {onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => {onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

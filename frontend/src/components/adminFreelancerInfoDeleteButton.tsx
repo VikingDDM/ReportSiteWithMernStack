@@ -10,17 +10,14 @@ type IAdminFreelancerInfoDeleteButtonProps = {
   }
 const AdminFreelancerInfoDeleteButton = ({info_id, settingFreelancerInfoID} : IAdminFreelancerInfoDeleteButtonProps) => {
 
-    const [deleteFreelancerInfo, { isLoading, error, isSuccess, isError }] = useDeleteFreelancerInfoMutation();
+    const [deleteFreelancerInfo, { isLoading, error, isError }] = useDeleteFreelancerInfoMutation();
 
     useEffect(() => {
       settingFreelancerInfoID(); 
     }, [info_id])
 
     useEffect(() => {
-        if (isSuccess) {
-          toast.success('Post deleted successfully');
-        }
-    
+      
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -44,7 +41,7 @@ const AdminFreelancerInfoDeleteButton = ({info_id, settingFreelancerInfoID} : IA
     };
 
     return (
-        <Button onClick={() => { onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset"}} onClick={() => { onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )

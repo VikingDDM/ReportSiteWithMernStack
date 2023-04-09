@@ -2,18 +2,10 @@ import { object, string, TypeOf } from 'zod';
 
 export const createReportSchema = object({
     body: object({
-      Payment: string({
-        required_error: 'Content is required',
-      }),
-      Project: string({
-        required_error: 'Content is required',
-      }),
-      Study: string({
-        required_error: 'Content is required',
-      }),
-      Extra: string({
-        required_error: 'Content is required',
-      }),
+      Payment: string(),
+      Project: string(),
+      Study: string(),
+      Extra: string(),
       Username: string()
     }),
 });

@@ -39,8 +39,8 @@ type IUserPayInfoEditModelProps = {
 const updatePayHistorySchema = object({
      name: string(),
      paymentWay: string(),
-     rate: string(),
-     realAmount: string(),
+     rate: string().min(1, 'Rate is required'),
+     realAmount: string().min(1, 'Amount is required'),
      amount: string(),
 }).partial();
 
@@ -78,11 +78,11 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
       setValue('realAmount', defaultValueD)
       setValue('amount', (Number(defaultValueC) * Number(defaultValueD)).toString())
       clearErrors('rate');
+      clearErrors('realAmount');
     }, [modalShow])
 
     useEffect(() => {
         if (isSuccess) {
-          toast.success("Updated successfully");
           handleModalClose();
         }
     
@@ -182,7 +182,7 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
                           <TextField
                             fullWidth 
                             defaultValue={defaultValueC}
-                            error={!!errors['name']}
+                            error={!!errors['rate']}
                             type="number"
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('rate')}
@@ -193,9 +193,11 @@ const AdminPaymentStatusEditModal = ({modalShow, handleModalClose, payHistory_id
                             fullWidth 
                             defaultValue={defaultValueD}
                             type="number"
+                            error={!!errors['realAmount']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('realAmount')}
                           />
+                          {errors.realAmount && <p style={{margin:"unset", color:"red"}}>{errors.realAmount.message}</p>}
                         </Paper>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />

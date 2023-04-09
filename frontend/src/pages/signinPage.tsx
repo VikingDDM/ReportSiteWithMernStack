@@ -73,9 +73,6 @@ const SigninPage = () => {
       } = methods;
     
       useEffect(() => {
-        if (isSuccess) {
-          toast.success('You successfully logged in');
-        }
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>

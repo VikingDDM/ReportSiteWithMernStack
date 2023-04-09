@@ -14,6 +14,13 @@ import { object, string, TypeOf } from 'zod';
 import {  useCreatePayPlanMutation } from '../redux/api/paymentApi';
 import { toast } from 'react-toastify';
 import UserPayPlanTable from '../components/userPayPlanTable';
+import { useAppSelector } from '../redux/hooks';
+import {user} from '../redux/selectors/userSelector';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Dayjs } from 'dayjs';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.4rem;
@@ -45,24 +52,44 @@ const style = {
 const createPayPlanSchema = object({
   name: string(),
   plan: string(),
+  payPlanDate: string(),
+})
+
+const createPayPlanFormSchema = object({
+  plan: string().min(1, 'Plan is required'),
 })
 
 export type ICreatePayPlan = TypeOf<typeof createPayPlanSchema>;
+export type ICreatePayPlanFrom = TypeOf<typeof createPayPlanFormSchema>
 
 const UserPaymentPlanPage = () => {
+  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null)
+  const [selectDateValue, setSelectDateValue] = React.useState(new Date().toISOString());
+  const planName = useAppSelector(user);
     // model action section
     const [modelShow, setModelShow] = useState(false);
-    const [buttonAble, setButtonAble] = React.useState("");
+    const [submitAble, setSubmitAble] = React.useState([]);
     const modelHandleShow = () => setModelShow(true);
     const handleClose = () => {
       setModelShow(false);
-      setValue('name', '');
       setValue('plan', '');
+      setDateValue(null);
+      clearErrors('plan')
     };
+
+    useEffect(() => {
+      if(dateValue !== null){
+        const submitYear = (dateValue.toDate()).getFullYear();
+        const submitMonth = (dateValue.toDate()).getMonth();
+        const submitDate = submitYear.toString() + submitMonth.toString();
+        console.log(submitDate)
+        setSelectDateValue(submitDate);
+      }
+    }, [dateValue]);
       
 // report submitting section
-    const methods = useForm<ICreatePayPlan>({
-      resolver: zodResolver(createPayPlanSchema),
+    const methods = useForm<ICreatePayPlanFrom>({
+      resolver: zodResolver(createPayPlanFormSchema),
     });
 
     const {
@@ -70,17 +97,15 @@ const UserPaymentPlanPage = () => {
       handleSubmit,
       register,
       setValue,
-      formState: { isSubmitting },
+      clearErrors,
+      setError,
+      formState: { isSubmitting, errors },
     } = methods;
 
-    const [createPayPlan, { isLoading, isError, error, isSuccess }] =
+    const [createPayPlan, { isLoading, isError, error}] =
     useCreatePayPlanMutation();
 
     useEffect(() => {
-      if (isSuccess) {
-        toast.success('Created successfully');
-      }
-  
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
           (error as any).data.error.forEach((el: any) =>
@@ -104,18 +129,33 @@ const UserPaymentPlanPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitting]);
 
-    const onSubmitHandler: SubmitHandler<ICreatePayPlan> = (values) => {
-      createPayPlan(values);
-      setModelShow(false);
-      setValue('name', '')
-      setValue('plan', '')
+    const onSubmitHandler: SubmitHandler<ICreatePayPlanFrom> = (values) => {
+      let submitBoolean = true;
+      submitAble.map((eachVal) => {
+        if(eachVal === selectDateValue){
+          submitBoolean = false;
+        }
+      })
+      if(submitBoolean) {
+        createPayPlan({
+          name: planName?.name,
+          plan: values.plan,
+          payPlanDate: selectDateValue,
+        });
+        setModelShow(false);
+        setValue('plan', '');
+        setDateValue(null);
+      } else {
+        setError('plan', { type: 'custom', message: 'Your plan for this period already exists. Please set another period.' });
+      }
+      
     };
 
 
     return(
         <Container>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Informtion</h5>
-          <LoadingButton onClick={modelHandleShow} style={{display:buttonAble}}>
+          <LoadingButton onClick={modelHandleShow}>
             Add
           </LoadingButton>
           <Modal
@@ -131,22 +171,26 @@ const UserPaymentPlanPage = () => {
                  <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
-                          <p style={{margin:"unset", color:"gray"}}>Name</p>
+                          <p style={{margin:"unset", color:"gray"}}>Select the year and month for plan</p>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                              <DatePicker label={'"month" and "year"'} 
+                                          views={['month', 'year']} 
+                                          value={dateValue} 
+                                          defaultValue ={dateValue}
+                                          onChange={(newValue) => {setDateValue(newValue);}}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
+                          <p style={{margin:"unset", color:"gray"}}>Your Plan This Month($)</p>
                           <TextField
                             fullWidth 
-                            rows={2}
-                            multiline
-                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('name')}
-                          />  
-                          <p style={{margin:"unset", color:"gray"}}>Your Plan This Month</p>
-                          <TextField
-                            fullWidth 
-                            rows={2}
-                            multiline
+                            error={!!errors['plan']}
+                            type="number"
                             style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('plan')}
                           />
+                           {errors.plan && <p style={{margin:"unset", color:"red"}}>{errors.plan.message}</p>}
                         </Paper>
                         <React.Fragment>
                           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -160,7 +204,7 @@ const UserPaymentPlanPage = () => {
               </Box>
             </Box>
           </Modal>
-        <UserPayPlanTable setBtnAble={(btnAble:string) => setButtonAble(btnAble)}/>
+        <UserPayPlanTable setPlanSubmitAble={(payPlanWhen:any) => setSubmitAble(payPlanWhen)}/>
       </Container>
     )
 }
