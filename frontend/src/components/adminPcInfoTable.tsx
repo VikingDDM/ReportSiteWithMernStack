@@ -7,7 +7,6 @@ import Table from '@mui/material/Table';
 import FullScreenLoader from './fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import AdminPcInfoDeleteButton from './adminPcInfoDeleteButton';
 import TableContainer from '@mui/material/TableContainer';
@@ -168,7 +167,6 @@ function AdminPcInfoTable() {
               <StyledTableCell align="center">Name</StyledTableCell>
               <StyledTableCell align="center">DeviceName</StyledTableCell>
               <StyledTableCell align="center">Hardware</StyledTableCell>
-              <StyledTableCell align="center">Date</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -178,24 +176,21 @@ function AdminPcInfoTable() {
               : pcInfo
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
-                  {row.username}
+                <StyledTableCell style={{ width: 200,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="center">
+                  {row.username.replace(/\n/g, "\n")}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
-                  {row?.deviceName}
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
+                  {row?.deviceName.replace(/\n/g, "\n")}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
-                  {row?.hardware}
-                </StyledTableCell>
-                <StyledTableCell style={{ width: 250,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
-                  {row?.created_at}
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
+                  {row?.hardware.replace(/\n/g, "\n")}
                 </StyledTableCell>
                 <StyledTableCell style={{ width: 120}} align="center">
                   <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>
                   
-                  <AdminPcInfoDeleteButton settingPcInfoID={() => setDataid(row?._id) } info_id={dataid} />
+                  <AdminPcInfoDeleteButton info_id={row?._id} />
                 </StyledTableCell>
               </TableRow>
             ))}

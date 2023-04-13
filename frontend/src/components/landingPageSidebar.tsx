@@ -11,7 +11,6 @@ import { sidebaropening } from '../redux/features/sidebarActionSlice';
 import { sidebaropen } from '../redux/selectors/sidebarActionSelector';
 import { userApi } from "../redux/api/userApi";
 
-
 const drawerWidth: number = 240;
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -95,7 +94,7 @@ const LandingPageSidebar = () => {
           <img src='/logo.png' width={90} height={40} style={{float:"right"}}></img>
         </Toolbar>
         <Divider />
-        <List component="nav" style={{overflowX:'hidden',overflowY:'auto', height:"600px"}}>
+        <List  style={{overflowX:'hidden',overflowY:'auto'}}>
           {userrole === "admin" && <AdminListItems />}
           {userrole === "user" && <UserListItems />}  
         </List>

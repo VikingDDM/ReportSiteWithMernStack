@@ -6,15 +6,10 @@ import { toast } from 'react-toastify';
 
 type IAdminFreelancerInfoDeleteButtonProps = {
     info_id: string;
-    settingPcInfoID: () => void;
   }
-const AdminPcInfoDeleteButton = ({info_id, settingPcInfoID} : IAdminFreelancerInfoDeleteButtonProps) => {
+const AdminPcInfoDeleteButton = ({info_id}: IAdminFreelancerInfoDeleteButtonProps) => {
 
     const [deletePcInfo, { isLoading, error, isError }] = useDeletePcInfoMutation();
-
-    useEffect(() => {
-      settingPcInfoID(); 
-    }, [info_id])
 
     useEffect(() => {
         if (isError) {

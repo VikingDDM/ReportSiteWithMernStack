@@ -26,8 +26,6 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
 
   const { isLoading, isError, error, data: allMonthlyHistory } = useGetMonthlyAllQuery(null);
   const payHistory = useAppSelector(allPaymentHistory);
-  console.log(payHistory)
-
   useEffect(() => {
     let iniChartData :any = [];
     if(payHistory !== undefined){
@@ -147,7 +145,7 @@ const AdminPaymentStatusIllu = (props: ChildProps) => {
                       Total Amount
                     </Typography>
                     <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
-                      {new Date().toLocaleDateString()}
+                      {payHistory[4]}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
                       {cardData}$

@@ -8,7 +8,6 @@ import Table from '@mui/material/Table';
 import FullScreenLoader from '../components/fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
@@ -152,6 +151,7 @@ const AdminReportStatusPage = () => {
     useEffect(() => {
       if(dateValue !== null){
         const virtualDate = dateValue.toDate();
+        setWeekend("")
         if(virtualDate.getDay() === 0 || virtualDate.getDay() === 6){
           setWeekend("(It was weekend)")
         }
@@ -184,7 +184,7 @@ const AdminReportStatusPage = () => {
     }
     
     return (
-        <Container>
+        <Container maxWidth={false}>
            <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Report History</h5>
            <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported this day {weekend}</h5>
            <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -217,16 +217,16 @@ const AdminReportStatusPage = () => {
                         <StyledTableCell component="th" scope="row">
                           {row?.Username}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
                         <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">

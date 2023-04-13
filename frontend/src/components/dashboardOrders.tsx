@@ -38,7 +38,7 @@ export default function DashboardOrders() {
         recentPays.push(
           createData(
             recentData.id,
-            recentData.created_at,
+            (new Date(recentData.created_at)).toLocaleString("ja-JP"),
             recentData.name,
             recentData.paymentWay,
             recentData.amount,

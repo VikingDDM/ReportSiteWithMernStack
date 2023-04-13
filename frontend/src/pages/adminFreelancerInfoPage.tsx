@@ -113,7 +113,7 @@ const AdminFreelancerInfoPage = () => {
 
 
     return(
-        <Container>
+        <Container maxWidth={false}>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Freelancer Informtion</h5>
           <LoadingButton onClick={modelHandleShow}>
             Add

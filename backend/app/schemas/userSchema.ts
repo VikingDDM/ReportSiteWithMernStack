@@ -16,6 +16,30 @@ export const createUserSchema = object({
   }),
 });
 
+const params = {
+  params: object({
+    userinfoId: string(),
+  }),
+};
+
+export const updateRoleSchema = object({
+  ...params,
+  body: object({
+    role: string(),
+  }).partial(),
+});
+
+export const updatePasswordSchema = object({
+  ...params,
+  body: object({
+    password: string(),
+  }).partial(),
+});
+
+export const deleteUserSchema = object({
+  ...params,
+});
+
 export const loginUserSchema = object({
   body: object({
     email: string({ required_error: 'Email is required' }).email(
@@ -30,3 +54,6 @@ export const loginUserSchema = object({
 
 export type CreateUserInput = TypeOf<typeof createUserSchema>["body"];
 export type LoginUserInput = TypeOf<typeof loginUserSchema>["body"];
+export type UpdateRoleInput = TypeOf<typeof updateRoleSchema>;
+export type UpdatePasswordInput = TypeOf<typeof updatePasswordSchema>;
+export type DeleteUserInput = TypeOf<typeof deleteUserSchema>["params"];

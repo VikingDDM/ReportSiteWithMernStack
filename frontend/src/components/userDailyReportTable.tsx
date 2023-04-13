@@ -5,7 +5,6 @@ import Table from '@mui/material/Table';
 import FullScreenLoader from './fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import UserDailyReportDeleteButton from './userDailyReportDeleteButton';
 import TableContainer from '@mui/material/TableContainer';
@@ -53,8 +52,9 @@ function UserDailyReportTable(props: ChildProps) {
                                        setDataExtra(data.Extra);} 
     const handleClose = () => {setShow(false);}
     useEffect(() => {
+      
       if(userdailyreports !== undefined){
-       if(userdailyreports[0].length > 0 || new Date().getDay() === 0 || new Date().getDay() === 6 || new Date().getHours() <18){
+       if(userdailyreports[0].length > 0 || userdailyreports[3] === 0 || userdailyreports[3] === 6 || userdailyreports[2] <18){
         buttonAble = "none"
        } else{
         buttonAble = "block"
@@ -104,16 +104,16 @@ function UserDailyReportTable(props: ChildProps) {
                 <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                   {userdailyreports[1].name}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.Payment}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.Project}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.Study}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.Extra}
                 </StyledTableCell>
                 <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">

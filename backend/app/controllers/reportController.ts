@@ -39,26 +39,48 @@ export const getUserDailyReportsHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const tomorrow = new Date();
-
+    
     today.setHours(0);
     today.setMinutes(0);
     today.setSeconds(0);
-
+   
     const millisecondAfter = Date.parse(today.toLocaleString());
     const millisecondBefore = millisecondAfter + 86400000;
 
     tomorrow.setTime(millisecondBefore);
-
+    
     const query = {
       user: { $eq: res.locals.user._id },
       created_at: { $gte: today, $lte: tomorrow }
     }
+    
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
+    const thisTime = timezoneDate.getHours();
+    const thisDay = timezoneDate.getDay();
 
     const reports = await findReports(query);
     const users = await findUserById(res.locals.user._id);
-    const reportsWithUser = [reports, users];
+
+    const resetReports = reports.map((eachVal:any) => {
+      const timezoneDate = new Date();
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      timezoneDate.setTime(timezoneSecond);
+      return {
+       _id : eachVal._id,
+       Username : eachVal.Username,
+       Payment : eachVal.Payment,
+       Project : eachVal.Project,
+       Study : eachVal.Study,
+       Extra : eachVal.Extra,
+       created_at : timezoneDate.toLocaleString()
+      }
+   })
+    const reportsWithUser = [resetReports, users, thisTime, thisDay];
     
     res.status(200).json({
       status: "success",
@@ -78,7 +100,9 @@ export const getDailyReportStatusHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const tomorrow = new Date();
 
     today.setHours(0);
@@ -96,9 +120,28 @@ export const getDailyReportStatusHandler = async (
     const userquery = {
       role: {$eq:'user'}
     }
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
+    const thisDay = timezoneDate.getDay();
+
     const reports = await findReports(query);
     const users = await findUsers(userquery);
-    const reportsWithUsers = [reports, users];
+
+    const resetReports = reports.map((eachVal:any) => {
+      const timezoneDate = new Date();
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      timezoneDate.setTime(timezoneSecond);
+      return {
+       _id : eachVal._id,
+       Username : eachVal.Username,
+       Payment : eachVal.Payment,
+       Project : eachVal.Project,
+       Study : eachVal.Study,
+       Extra : eachVal.Extra,
+       created_at : timezoneDate.toLocaleString()
+      }
+   })
+    const reportsWithUsers = [resetReports, users, thisDay, timezoneDate.toLocaleString()];
     
     res.status(200).json({
       status: "success",
@@ -118,7 +161,9 @@ export const getReportStatusHandler = async (
   next: NextFunction,
 ) => {
   try {
-    const today = new Date(req.params.reportId);
+    const timezoneSecond = Date.parse((new Date(req.params.reportId)).toUTCString());
+    const today = new Date();
+    today.setTime(timezoneSecond);
     const tomorrow = new Date();
 
     today.setHours(0);
@@ -136,9 +181,28 @@ export const getReportStatusHandler = async (
     const userquery = {
       role: {$eq:'user'}
     }
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
+    const thisDay = timezoneDate.getDay();
+
     const reports = await findReports(query);
     const users = await findUsers(userquery);
-    const reportStatusWithUsers = [reports, users];
+
+    const resetReports = reports.map((eachVal:any) => {
+      const timezoneDate = new Date();
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      timezoneDate.setTime(timezoneSecond);
+      return {
+       _id : eachVal._id,
+       Username : eachVal.Username,
+       Payment : eachVal.Payment,
+       Project : eachVal.Project,
+       Study : eachVal.Study,
+       Extra : eachVal.Extra,
+       created_at : timezoneDate.toLocaleString()
+      }
+   })
+    const reportStatusWithUsers = [resetReports, users, thisDay];
     
     res.status(200).json({
       status: "success",
@@ -158,7 +222,9 @@ export const getUserWeeklyReportsHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const weeklyDay = today.getDay();
     
     const weeklyLastDay = new Date();
@@ -186,10 +252,29 @@ export const getUserWeeklyReportsHandler = async (
       user: { $eq: res.locals.user._id },
       created_at: { $gte: weeklyFirstDay, $lte: weeklyLastDay }
     }
+
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
+    const thisDay = timezoneDate.getDay();
     
     const reports = await findReports(query);
     const user = await findUserById(res.locals.user._id);
-    const reportsWithUser = [reports, user];
+
+    const resetReports = reports.map((eachVal:any) => {
+      const timezoneDate = new Date();
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      timezoneDate.setTime(timezoneSecond);
+      return {
+       _id : eachVal._id,
+       Username : eachVal.Usernames,
+       Payment : eachVal.Payment,
+       Project : eachVal.Project,
+       Study : eachVal.Study,
+       Extra : eachVal.Extra,
+       created_at : timezoneDate.toLocaleString()
+      }
+   })
+    const reportsWithUser = [resetReports, user, thisDay];
     
     res.status(200).json({
       status: "success",

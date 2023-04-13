@@ -109,6 +109,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 function AdminPaymentStatusTable() {
   
     const { isLoading, isError, error, data: payHistory } = useGetMonthlyPayHistoryQuery();
+
     const [monthlyPay, setMonthlyPay] = useState([]);
     const [selectingUsers, setSelectingUsers] = useState([]);
     const [dateSort, setDateSort] = useState(false);
@@ -261,7 +262,7 @@ function AdminPaymentStatusTable() {
               : monthlyPay)?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                 <StyledTableCell component="th" scope="row">
-                  {row?.created_at}
+                  {(new Date(row?.created_at)).toLocaleString("ja-JP")}
                 </StyledTableCell>
                 <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
                   {row.name}
@@ -278,7 +279,7 @@ function AdminPaymentStatusTable() {
                 <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                   {row?.amount}
                 </StyledTableCell>
-                <StyledTableCell style={{ whiteSpace:"normal"}}align="left">
+                <StyledTableCell style={{ width: 120}}align="center">
                   <Button style={{minWidth:"unset"}} onClick={() => handleShow(row)} >
                     <BorderColorIcon style={{color:"dodgerblue"}} />
                   </Button>

@@ -158,7 +158,7 @@ const AdminPaymentStatusPage = () => {
     };
 
     return(
-        <Container>
+        <Container maxWidth={false}>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Incoming Status This Month</h5>
           <AdminPaymentStatusIllu transUser={(users :any ) => setUsersForSelect(users)} />
           <LoadingButton onClick={modelHandleShow}>

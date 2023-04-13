@@ -1,18 +1,21 @@
 import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useDeleteFreelancerInfoMutation } from '../redux/api/freelancerInfoApi';
+import { useDeleteUserMutation } from '../redux/api/userApi';
 import { toast } from 'react-toastify';
 
-type IAdminFreelancerInfoDeleteButtonProps = {
+type IAdminUserDeleteButtonProps = {
     info_id: string;
+    buttonStyle: string;
   }
-const AdminFreelancerInfoDeleteButton = ({info_id} : IAdminFreelancerInfoDeleteButtonProps) => {
+const AdminUserDeleteButton = ({info_id, buttonStyle} : IAdminUserDeleteButtonProps) => {
 
-    const [deleteFreelancerInfo, { isLoading, error, isError }] = useDeleteFreelancerInfoMutation();
+    const [deleteUser, { isLoading, error, isError, isSuccess }] = useDeleteUserMutation();
 
     useEffect(() => {
-      
+        if(isSuccess) {
+          window.location.reload();
+        }
         if (isError) {
           if (Array.isArray((error as any).data.error)) {
             (error as any).data.error.forEach((el: any) =>
@@ -30,16 +33,17 @@ const AdminFreelancerInfoDeleteButton = ({info_id} : IAdminFreelancerInfoDeleteB
       }, [isLoading]);
     
       const onDeleteHandler = (id: string) => {
+        console.log(id)
         if (window.confirm('Are you sure')) {
-            deleteFreelancerInfo(id);
+          deleteUser(id);
         }
     };
 
     return (
-        <Button style={{minWidth:"unset"}} onClick={() => { onDeleteHandler(info_id)}}>
+        <Button style={{minWidth:"unset", display:buttonStyle}} onClick={() => {onDeleteHandler(info_id)}}>
             <DeleteForeverIcon style={{color:"tomato"}} />
         </Button>
     )
 }
 
-export default AdminFreelancerInfoDeleteButton;
+export default AdminUserDeleteButton;

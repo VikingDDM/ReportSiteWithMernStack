@@ -153,8 +153,8 @@ const UserPaymentPlanPage = () => {
 
 
     return(
-        <Container>
-          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Informtion</h5>
+        <Container maxWidth={false}>
+          <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment Plan</h5>
           <LoadingButton onClick={modelHandleShow}>
             Add
           </LoadingButton>

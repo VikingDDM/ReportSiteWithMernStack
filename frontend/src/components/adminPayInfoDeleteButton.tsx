@@ -6,15 +6,10 @@ import { toast } from 'react-toastify';
 
 type IAdminPayInfoDeleteButtonProps = {
     info_id: string;
-    settingPayInfoID: () => void;
   }
-const AdminPayInfoDeleteButton = ({info_id, settingPayInfoID} : IAdminPayInfoDeleteButtonProps) => {
+const AdminPayInfoDeleteButton = ({info_id} : IAdminPayInfoDeleteButtonProps) => {
 
     const [deletePayInfo, { isLoading, error, isError }] = useDeletePayInfoMutation();
-
-    useEffect(() => {
-      settingPayInfoID(); 
-    }, [info_id])
 
     useEffect(() => {
     

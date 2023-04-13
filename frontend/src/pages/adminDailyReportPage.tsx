@@ -8,7 +8,6 @@ import Table from '@mui/material/Table';
 import FullScreenLoader from '../components/fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
@@ -104,6 +103,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 const AdminDailyReportPage = () => {
 
     const { isLoading, isError, error, data: reportsWithUsers } = useGetDailyReportStatusQuery();
+
     const [unreportedNames, setUnreportedNames] = useState([]);
     const [weekend, setWeekend] = useState('');
  
@@ -127,11 +127,13 @@ const AdminDailyReportPage = () => {
     };
 
     useEffect(() => {
-      if(new Date().getDay() === 0 || new Date().getDay() === 6){
-        setWeekend('(This is weekend)')
-      }
+      
       if(reportsWithUsers !== undefined) {
-        let unreportedUserList:any = []
+        setWeekend('')
+        if(reportsWithUsers[2] === 0 || reportsWithUsers[2] === 6){
+          setWeekend('(This is weekend)')
+        }
+        let unreportedUserList:any = [];
         reportsWithUsers[1].map((userValue:any) => {
           const unreportFilter = reportsWithUsers[0].find((reportValue:any) => {
             return reportValue.Username === userValue.name
@@ -166,8 +168,8 @@ const AdminDailyReportPage = () => {
     }
     
     return (
-        <Container>
-           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Today's Roports</h5>
+        <Container maxWidth={false}>
+           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Today's Roports {"(" + reportsWithUsers[3] + ")"}</h5>
            <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported today {weekend}</h5>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
@@ -190,16 +192,16 @@ const AdminDailyReportPage = () => {
                         <StyledTableCell component="th" scope="row">
                           {row?.Username}
                         </StyledTableCell>
-                        <StyledTableCell style={{ wordBreak:"break-word",maxWidth: 120,whiteSpace:"normal" }} align="left">
+                        <StyledTableCell style={{ wordBreak:"break-word",maxWidth: 120,whiteSpace:"pre-wrap" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
                         <StyledTableCell style={{ maxWidth: 120,wordBreak:"break-word",whiteSpace:"normal"}} align="left">

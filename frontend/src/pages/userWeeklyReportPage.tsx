@@ -8,7 +8,6 @@ import Table from '@mui/material/Table';
 import FullScreenLoader from '../components/fullScreenLoader';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
@@ -106,15 +105,16 @@ const UserWeeklyReportPage = () => {
 
     const { isLoading, isError, error, data: userWeeklyReports } = useGetUserWeeklyReportsQuery();
     const [reportTime, setReportTime] = React.useState(6)
-
+    
     useEffect(() => {
       if(userWeeklyReports !== undefined) {
-        if(new Date().getDay() === 6) {
-          setReportTime(new Date().getDay()-userWeeklyReports[0].length-1);
-        } else if (new Date().getDay() === 0){
-          setReportTime(new Date().getDay()-userWeeklyReports[0].length);
+       
+        if(userWeeklyReports[2] === 6) {
+          setReportTime(userWeeklyReports[2]-1-userWeeklyReports[0].length);
+        } else if (userWeeklyReports[2] === 0){
+          setReportTime(userWeeklyReports[2]-userWeeklyReports[0].length);
         } else {
-          setReportTime(new Date().getDay()-userWeeklyReports[0].length-1);
+          setReportTime(userWeeklyReports[2]-userWeeklyReports[0].length);
         }
       }
     },[userWeeklyReports])
@@ -163,7 +163,7 @@ const UserWeeklyReportPage = () => {
     }
 
     return (
-        <Container>
+        <Container maxWidth={false}>
            <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>You haven't reported {reportTime} times, this week</h5>
            <TableContainer component={Paper} style={{marginTop:"30px"}} >
                 <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
@@ -186,16 +186,16 @@ const UserWeeklyReportPage = () => {
                         <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
                           {userWeeklyReports[1].name}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Payment}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Project}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Study}
                         </StyledTableCell>
-                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                        <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                           {row?.Extra}
                         </StyledTableCell>
                         <StyledTableCell style={{ width: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="center">

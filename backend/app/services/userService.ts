@@ -1,5 +1,5 @@
 import { omit, get } from 'lodash';
-import { FilterQuery, QueryOptions } from 'mongoose';
+import { FilterQuery, QueryOptions, UpdateQuery } from 'mongoose';
 import config from 'config';
 import userModel, { User } from '../models/userModel';
 import { excludedFields } from '../controllers/authController';
@@ -11,6 +11,24 @@ import redisClient from '../utils/connectRedis';
 export const createUser = async (input: Partial<User>) => {
   const user = await userModel.create(input);
   return omit(user.toJSON(), excludedFields);
+};
+
+// UpdateRole service
+export const findAndUpdateUser = async (
+  query: FilterQuery<User>,
+  update: UpdateQuery<User>,
+  options: QueryOptions
+) => {
+  return await userModel.findOneAndUpdate(query, update, options);
+};
+
+// Delete service
+export const findOneAndDeleteUser = async (
+  query: FilterQuery<User>,
+  options: QueryOptions = {}
+) => {
+  const user =  await userModel.findOneAndDelete(query, options).lean();
+  return omit(user, excludedFields);
 };
 
 // Find User by Id

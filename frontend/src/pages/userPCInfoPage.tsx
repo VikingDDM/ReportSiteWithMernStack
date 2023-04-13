@@ -143,7 +143,7 @@ const UserPCInfoPage = () => {
         return <FullScreenLoader />;
       }
     return(
-        <Container>
+        <Container maxWidth={false}>
              <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>UserPCInfoPage</h5>
              <TableContainer component={Paper} style={{marginTop:"30px"}} >
         <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
@@ -152,7 +152,6 @@ const UserPCInfoPage = () => {
               <StyledTableCell align="center">Name</StyledTableCell>
               <StyledTableCell align="center">DeviceName</StyledTableCell>
               <StyledTableCell align="center">Hardware</StyledTableCell>
-              <StyledTableCell align="center">Date</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -161,17 +160,14 @@ const UserPCInfoPage = () => {
               : pcInfo
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
-                <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
+                <StyledTableCell style={{ width: 200,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="center">
                   {row.username}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.deviceName}
                 </StyledTableCell>
-                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word" }} align="left">
+                <StyledTableCell style={{ maxWidth: 120,whiteSpace:"pre-wrap",wordBreak:"break-word" }} align="left">
                   {row?.hardware}
-                </StyledTableCell>
-                <StyledTableCell style={{ width: 250,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
-                  {row?.created_at}
                 </StyledTableCell>
               </TableRow>
             ))}

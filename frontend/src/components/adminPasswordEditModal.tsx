@@ -1,14 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdatePayPlanMutation } from "../redux/api/paymentApi";
+import { useUpdatePWDMutation } from "../redux/api/userApi";
+import TextField from '@mui/material/TextField';
 import { toast } from 'react-toastify';
 
 const style = {
@@ -23,41 +23,43 @@ const style = {
     p: 4,
   };
 
-type IUserPayInfoEditModelProps = {
+type IUserPWDEditModelProps = {
   modalShow: boolean;
   handleModalClose: () => void;
-  payplan_id: any;
-  defaultValueA: any;
-  defaultValueB: any;
+  pwdinfo_id: any;
+  dataA:string
 }
 
-const updatePayPlanSchema = object({
-    name: string(),
-    plan: string(),
+const updatePWDSchema = object({
+    password: string()
+      .min(1, 'Password is required')
+      .min(8, 'Password must be more than 8 characters')
+      .max(32, 'Password must be less than 32 characters')
 }).partial();
 
-export type IUpdatePayPlan = TypeOf<typeof updatePayPlanSchema>;
+export type IUpdatePWD = TypeOf<typeof updatePWDSchema>;
 
-const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, defaultValueA, defaultValueB} : IUserPayInfoEditModelProps) => {
+const AdminPasswordEditModal = ({modalShow, handleModalClose, pwdinfo_id, dataA} : IUserPWDEditModelProps) => {
 
-    const [updatePayPlan, { isLoading, isError, error, isSuccess }] = useUpdatePayPlanMutation();
+    const [updatePWD, { isLoading, isError, error, isSuccess }] = useUpdatePWDMutation();
     
-    const methods = useForm<IUpdatePayPlan>({
-        resolver: zodResolver(updatePayPlanSchema),
+    const methods = useForm<IUpdatePWD>({
+        resolver: zodResolver(updatePWDSchema),
     });
 
     const {
         reset,
         handleSubmit,
         register,
+        clearErrors,
         setValue,
-        formState: { isSubmitting },
+        formState: { isSubmitting, errors },
     } = methods;
 
     useEffect(() => {
-      setValue('name', defaultValueA)
-      setValue('plan', defaultValueB)
-    }, [modalShow])
+        clearErrors('password');
+        setValue('password', '')
+      }, [modalShow])
 
     useEffect(() => {
         if (isSuccess) {
@@ -87,8 +89,11 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitting]);
     
-    const onSubmitHandler: SubmitHandler<IUpdatePayPlan> = (values) => {
-        updatePayPlan({ id: payplan_id, payment: values });
+    const onSubmitHandler: SubmitHandler<IUpdatePWD> = (values) => {
+      if (window.confirm('Are you sure, ' + dataA + '?')) {
+        updatePWD({ id: pwdinfo_id, pswInfo: values });
+        
+      }
     }
 
     return(
@@ -99,21 +104,20 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
           >  
             <Box sx={style}>
                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Change the plan?
+                  Are you gonna change your password,{dataA}?
                </Typography>
                <Box sx={{ width: '100%' }}>
                 <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
-                          <p style={{margin:"unset", color:"gray"}}>Plan</p>
+                          <p style={{margin:"unset", color:"gray"}}>New Password</p>
                           <TextField
                             fullWidth 
-                            defaultValue={defaultValueB}
-                            rows={2}
-                            multiline
-                            style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('plan')}
+                            error={!!errors['password']}
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('password')}
                           />
+                          {errors.password && <p style={{margin:"unset", color:"red"}}>{errors.password.message}</p>}
                         </Paper>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
@@ -128,4 +132,4 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
     )
 }
 
-export default AdminPayPlanEditModal;
+export default AdminPasswordEditModal;

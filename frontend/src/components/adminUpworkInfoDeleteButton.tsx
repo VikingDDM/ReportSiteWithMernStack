@@ -6,15 +6,10 @@ import { toast } from 'react-toastify';
 
 type IAdminUpworkInfoDeleteButtonProps = {
     info_id: string;
-    settingUpworkInfoID: () => void;
   }
-const AdminUpworkDeleteButton = ({info_id, settingUpworkInfoID} : IAdminUpworkInfoDeleteButtonProps) => {
+const AdminUpworkDeleteButton = ({info_id} : IAdminUpworkInfoDeleteButtonProps) => {
 
     const [deleteUpworkInfo, { isLoading, error, isError }] = useDeleteUpworkInfoMutation();
-
-    useEffect(() => {
-        settingUpworkInfoID(); 
-    }, [info_id])
 
     useEffect(() => {
         if (isError) {

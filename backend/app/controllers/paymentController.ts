@@ -151,7 +151,7 @@ export const createPayHistoryHandler = async (
       monthlyPayment.map((eachPayment) => (
         monthlyPay += parseFloat(eachPayment.amount) 
       ));
-      const monthlyTotal = monthlyPay.toString();
+      const monthlyTotal = (monthlyPay.toFixed(4)).toString();
       await createMonthlyTotal({ monthlyTotal });
 
       // create eachMonthlyTotal
@@ -165,12 +165,14 @@ export const createPayHistoryHandler = async (
       eachMonthlyPayment.map((eachPayment) => (
         eachMonthlyPay += parseFloat(eachPayment.amount) 
       ));
-      const eachMonthlyTotal = eachMonthlyPay.toString();
+      const eachMonthlyTotal = (eachMonthlyPay.toFixed(4)).toString();
       const eachName = realPayment.name
       await createEachMonthlyTotal({ eachMonthlyTotal, eachName });
 
       //response
+      const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
       today = new Date();
+      today.setTime(timezoneSecond);
       firstDay = new Date();
       lastDay = new Date();
   
@@ -207,7 +209,7 @@ export const createPayHistoryHandler = async (
         created_at: { $gte: firstDay, $lte: lastDay },
         eachMonthlyAmount: { $ne: null}
       }
-      const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth()).toString();
+      const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth() ).toString();
       const queryMonthlyPayPlan = {
         payPlanDate: { $eq: payPlanQueryDate },
         plan: { $ne: null},
@@ -239,7 +241,7 @@ export const createPayHistoryHandler = async (
          else {realEachMonthlyAmounts.push(individualAmounts[0]);}
       })
       const allUsers = await findAllUsers();
-      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers]
+      const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers];
 
       res.status(201).json({
         status: "success",
@@ -258,7 +260,9 @@ export const getMonthlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const firstDay = new Date();
     const lastDay = new Date();
 
@@ -283,8 +287,24 @@ export const getMonthlyPaymentHandler = async (
       amount: { $ne: null}
     }
     const realMonthlyAmounts = await findPayment(query);
+
+    const resetRealMonthlyAmounts = realMonthlyAmounts.map((eachVal:any) => {
+      const timezoneDate = new Date();
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      timezoneDate.setTime(timezoneSecond);
+      return {
+       _id : eachVal._id,
+       name : eachVal.name,
+       paymentWay : eachVal.paymentWay,
+       amount : eachVal.amount,
+       rate : eachVal.rate,
+       realAmount : eachVal.realAmount,
+       created_at : timezoneDate.toLocaleString()
+      }
+   })
+
     const allUsers = await findAllUsers();
-    const payment = [realMonthlyAmounts, allUsers]
+    const payment = [resetRealMonthlyAmounts, allUsers]
   
     res.status(200).json({
       status: "success",
@@ -392,7 +412,9 @@ export const updatePaymentHistoryHandler = async (
         );
       }
       //response
+      const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
       let today = updatedPayment.created_at;
+      today.setTime(timezoneSecond);
       let firstDay = new Date();
       let lastDay = new Date();
       let thisYear = today.getFullYear();
@@ -674,10 +696,12 @@ export const getAllMonthlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const firstDay = new Date();
     const lastDay = new Date();
-
+    
     let thisMonth = today.getMonth();
     let thisYear = today.getFullYear();
 
@@ -687,7 +711,7 @@ export const getAllMonthlyPaymentHandler = async (
     let nextMonth = thisMonth+1;
     if(thisMonth === 0){lastMonth = 11; startYear = thisYear-1;}
     if(thisMonth === 11){nextMonth = 0; endYear = thisYear+1;}
-
+    
     if(today.getDate() <= 24) {
         firstDay.setMonth(lastMonth);          
         lastDay.setMonth(thisMonth);
@@ -712,6 +736,7 @@ export const getAllMonthlyPaymentHandler = async (
       eachMonthlyAmount: { $ne: null}
     }
     const payPlanQueryDate = (lastDay.getFullYear()).toString()+(lastDay.getMonth()).toString();
+    
     const queryMonthlyPayPlan = {
       payPlanDate: { $eq: payPlanQueryDate },
       plan: { $ne: null},
@@ -742,8 +767,13 @@ export const getAllMonthlyPaymentHandler = async (
       if(individualAmounts[0] === undefined){realEachMonthlyAmounts.push({name: eachPlan.name, eachMonthlyAmount: "0"})}
        else {realEachMonthlyAmounts.push(individualAmounts[0]);}
     })
+
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
+
     const allUsers = await findAllUsers();
-    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers]
+    const payment = [realMonthlyAmounts, realEachMonthlyAmounts, monthlyPayPlan, allUsers, timezoneDate.toLocaleDateString()]
+
     res.status(200).json({
       status: "success",
       data: {
@@ -762,7 +792,9 @@ export const getAllYearlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
     const today = new Date();
+    today.setTime(timezoneSecond);
     const firstDay = new Date();
     const lastDay = new Date();
     let thisYear = today.getFullYear();
@@ -773,6 +805,7 @@ export const getAllYearlyPaymentHandler = async (
     let yearlyTotalAmount = 0;
     let yearlyEachMonthAmount = [];
     let recentPayments:any;
+    let resetRecentPayments:any;
     
     for(let eachMonth = 0; eachMonth < thisMonth + 1; eachMonth++) {
       let startYear = thisYear;
@@ -799,6 +832,20 @@ export const getAllYearlyPaymentHandler = async (
         }
         recentPayments = await findPayment(queryRecentPayments);
         recentPayments.slice(recentPayments.length-6);
+        resetRecentPayments = recentPayments.map((eachVal:any) => {
+          const timezoneDate = new Date();
+          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+          timezoneDate.setTime(timezoneSecond);
+          return {
+           _id : eachVal._id,
+           name : eachVal.name,
+           paymentWay : eachVal.paymentWay,
+           amount : eachVal.amount,
+           rate : eachVal.rate,
+           realAmount : eachVal.realAmount,
+           created_at : timezoneDate.toLocaleString()
+          }
+       })
       }
       
       const queryMonthlyAmount = {
@@ -817,8 +864,10 @@ export const getAllYearlyPaymentHandler = async (
       yearlyTotalAmount += parseFloat(realMonthlyAmounts.monthlyAmount);
       yearlyEachMonthAmount.push(realMonthlyAmounts.monthlyAmount);
     }
+    const timezoneDate = new Date();
+    timezoneDate.setTime(timezoneSecond);
     
-    const payment = [yearlyTotalAmount, yearlyEachMonthAmount, recentPayments];
+    const payment = [yearlyTotalAmount, yearlyEachMonthAmount, resetRecentPayments, timezoneDate.toLocaleDateString()];
     
     res.status(200).json({
       status: "success",
@@ -838,7 +887,9 @@ export const getAllPaymentHistoryHandler = async (
   next: NextFunction
 ) => {
   try {
-    const today = new Date(req.params.paymentId);
+    const timezoneSecond = Date.parse((new Date(req.params.paymentId)).toUTCString());
+    const today = new Date();
+    today.setTime(timezoneSecond);
     const firstDay = new Date();
     const lastDay = new Date();
     let thisYear = today.getFullYear();
@@ -852,6 +903,7 @@ export const getAllPaymentHistoryHandler = async (
     let yearlyEachTotalAmounts:any =[];
     let monthlyEachTotalAmounts:any = [];
     let recentPayments:any;
+    let resetRecentPayments:any
     
     for(let eachMonth = 0; eachMonth < 12; eachMonth++) {
       let startYear = thisYear;
@@ -877,6 +929,20 @@ export const getAllPaymentHistoryHandler = async (
           amount: { $ne: null}
         }
         recentPayments = await findPayment(queryRecentPayments);
+        resetRecentPayments = recentPayments.map((eachVal:any) => {
+          const timezoneDate = new Date();
+          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+          timezoneDate.setTime(timezoneSecond);
+          return {
+           _id : eachVal._id,
+           name : eachVal.name,
+           paymentWay : eachVal.paymentWay,
+           amount : eachVal.amount,
+           rate : eachVal.rate,
+           realAmount : eachVal.realAmount,
+           created_at : timezoneDate.toLocaleString()
+          }
+       })
       }
       
       const queryMonthlyAmount = {
@@ -933,7 +999,7 @@ export const getAllPaymentHistoryHandler = async (
     })
     }
     const allUsers = await findAllUsers();
-    const payment = [yearlyTotalAmount, yearlyEachMonthAmount, yearlyEachTotalAmounts, monthlyEachTotalAmounts[0], recentPayments, allUsers];
+    const payment = [yearlyTotalAmount, yearlyEachMonthAmount, yearlyEachTotalAmounts, monthlyEachTotalAmounts[0], resetRecentPayments, allUsers];
     
     res.status(200).json({
       status: "success",

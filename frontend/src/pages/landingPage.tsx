@@ -8,7 +8,7 @@ import DashboardOrders from "../components/dashboardOrders";
 
 const LandingPage = () => {
     return(
-        <Container>
+        <Container maxWidth={false}>
             <Box
               component="main"
               sx={{

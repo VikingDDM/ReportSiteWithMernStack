@@ -271,7 +271,7 @@ const AdminPaymentHistoryPage = () => {
     }
  
     return(
-        <Container>
+        <Container maxWidth={false}>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Payment History </h5>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DatePicker']}>
@@ -313,7 +313,7 @@ const AdminPaymentHistoryPage = () => {
                 )?.map((row:any, key: any) => (
                   <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                     <StyledTableCell component="th" scope="row">
-                      {row?.created_at}
+                      {(new Date(row?.created_at)).toLocaleString("ja-JP")}
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row.name}
@@ -330,8 +330,8 @@ const AdminPaymentHistoryPage = () => {
                     <StyledTableCell style={{ maxWidth: 120,whiteSpace:"normal",wordBreak:"break-word"}} align="left">
                       {row?.amount}
                     </StyledTableCell>
-                    <StyledTableCell style={{ whiteSpace:"normal"}} align="center">
-                      <Button onClick={() => handleShow(row)} >
+                    <StyledTableCell style={{ width: 120}} align="center">
+                      <Button style={{minWidth:"unset"}}  onClick={() => handleShow(row)} >
                         <BorderColorIcon style={{color:"dodgerblue"}} />
                       </Button>
                       

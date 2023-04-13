@@ -55,7 +55,7 @@ export default function DashboardDeposits() {
             Total Amount
           </Typography>
           <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
-            {new Date().toLocaleDateString()}
+            {allYearlyHistory[3]}
           </Typography>
           <Typography variant="body2" color="text.secondary" style={{fontSize:"20px"}}>
             {amount}$

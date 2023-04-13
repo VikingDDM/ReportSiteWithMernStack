@@ -1,15 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdatePayPlanMutation } from "../redux/api/paymentApi";
+import { useUpdateRoleMutation } from "../redux/api/userApi";
 import { toast } from 'react-toastify';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -23,28 +24,31 @@ const style = {
     p: 4,
   };
 
-type IUserPayInfoEditModelProps = {
+type IUserRoleEditModelProps = {
   modalShow: boolean;
   handleModalClose: () => void;
-  payplan_id: any;
+  roleinfo_id: any;
   defaultValueA: any;
-  defaultValueB: any;
 }
 
-const updatePayPlanSchema = object({
-    name: string(),
-    plan: string(),
+const updateRoleSchema = object({
+    role: string(),
 }).partial();
 
-export type IUpdatePayPlan = TypeOf<typeof updatePayPlanSchema>;
+export type IUpdateRole = TypeOf<typeof updateRoleSchema>;
 
-const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, defaultValueA, defaultValueB} : IUserPayInfoEditModelProps) => {
+const AdminRoleEditModal = ({modalShow, handleModalClose, roleinfo_id, defaultValueA} : IUserRoleEditModelProps) => {
 
-    const [updatePayPlan, { isLoading, isError, error, isSuccess }] = useUpdatePayPlanMutation();
+    const [updateRole, { isLoading, isError, error, isSuccess }] = useUpdateRoleMutation();
+    const [roleSelect, setRoleSelect] = useState(''); 
     
-    const methods = useForm<IUpdatePayPlan>({
-        resolver: zodResolver(updatePayPlanSchema),
+    const methods = useForm<IUpdateRole>({
+        resolver: zodResolver(updateRoleSchema),
     });
+
+    const handleRoleChange = (event: SelectChangeEvent) => {
+        setRoleSelect(event.target.value as string);
+      };
 
     const {
         reset,
@@ -54,14 +58,18 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
         formState: { isSubmitting },
     } = methods;
 
+    register('role', {
+        onChange: handleRoleChange,
+      });
+
     useEffect(() => {
-      setValue('name', defaultValueA)
-      setValue('plan', defaultValueB)
+      setValue('role', defaultValueA)
     }, [modalShow])
 
     useEffect(() => {
         if (isSuccess) {
           handleModalClose();
+          window.location.reload();
         }
     
         if (isError) {
@@ -87,8 +95,8 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitting]);
     
-    const onSubmitHandler: SubmitHandler<IUpdatePayPlan> = (values) => {
-        updatePayPlan({ id: payplan_id, payment: values });
+    const onSubmitHandler: SubmitHandler<IUpdateRole> = (values) => {
+        updateRole({ id: roleinfo_id, roleInfo: values });
     }
 
     return(
@@ -99,21 +107,24 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
           >  
             <Box sx={style}>
                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Change the plan?
+                  OverWriting?
                </Typography>
                <Box sx={{ width: '100%' }}>
                 <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
-                          <p style={{margin:"unset", color:"gray"}}>Plan</p>
-                          <TextField
-                            fullWidth 
-                            defaultValue={defaultValueB}
-                            rows={2}
-                            multiline
-                            style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('plan')}
-                          />
+                          <p style={{margin:"unset", color:"gray"}}>Name</p>
+                          <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            defaultValue={defaultValueA}
+                            fullWidth
+                            style={{ marginTop:"2px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('role')}
+                          >
+                            <MenuItem value="admin">Admin</MenuItem>
+                            <MenuItem value="user">User</MenuItem>
+                          </Select>
                         </Paper>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
@@ -128,4 +139,4 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
     )
 }
 
-export default AdminPayPlanEditModal;
+export default AdminRoleEditModal;

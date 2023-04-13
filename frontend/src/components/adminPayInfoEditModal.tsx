@@ -117,7 +117,7 @@ const AdminPayInfoEditModal = ({modalShow, handleModalClose, payinfo_id, default
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
                           />  
-                          <p style={{margin:"unset", color:"gray"}}>Category</p>
+                          <p style={{margin:"unset", color:"gray"}}>Pay method</p>
                           <TextField
                             fullWidth 
                             defaultValue={defaultValueB}

@@ -78,7 +78,17 @@ const AdminPCInfoPage = () => {
       clearErrors,
       formState: { isSubmitting, errors }
     } = methods;
-
+    
+    
+    const handleKeyDown = (event:any) => {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+        const singleValue = event.target.value;
+        const field = event.target.name;
+        setValue(field, singleValue + "\n");
+      }
+    };
+    
     const [createPcInfo, { isLoading, isError, error}] =
     useCreatePcInfoMutation();
 
@@ -108,6 +118,7 @@ const AdminPCInfoPage = () => {
     }, [isSubmitting]);
 
     const onSubmitHandler: SubmitHandler<ICreatePcInfo> = (values) => {
+      console.log(values)
       createPcInfo(values);
       setModelShow(false);
       setValue('username', '')
@@ -117,7 +128,7 @@ const AdminPCInfoPage = () => {
 
 
     return(
-        <Container>
+        <Container maxWidth={false}>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>PC Informtion</h5>
           <LoadingButton onClick={modelHandleShow}>
             Add
@@ -140,6 +151,7 @@ const AdminPCInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            onKeyDown={handleKeyDown}
                             error={!!errors['username']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('username')}
@@ -150,6 +162,7 @@ const AdminPCInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            onKeyDown={handleKeyDown}
                             error={!!errors['deviceName']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('deviceName')}
@@ -160,6 +173,7 @@ const AdminPCInfoPage = () => {
                             fullWidth 
                             rows={2}
                             multiline
+                            onKeyDown={handleKeyDown}
                             error={!!errors['hardware']}
                             style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
                             {...register('hardware')}

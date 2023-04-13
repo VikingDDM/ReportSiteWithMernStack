@@ -75,9 +75,9 @@ const UserDailyReportPage = () => {
     const [headerText, setHeaderText] = React.useState('');
     
     useEffect(() => {
-      if(new Date().getDay() === 0 || new Date().getDay() === 6) {
+      if((new Date().getUTCDay()) === 0 || (new Date().getUTCDay()) === 6) {
         setHeaderText('This is weekend. Have a rest.')
-      } else if(new Date().getHours() <18){setHeaderText('This is not report time.')}
+      } else if(new Date().getUTCHours() +9 <18){setHeaderText('This is not report time.')}
     },[])
 // model action section
     const [activeStep, setActiveStep] = React.useState(0);
@@ -210,7 +210,7 @@ const UserDailyReportPage = () => {
 
 
     return(
-        <Container>
+        <Container maxWidth={false}>
           <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>Please report in a few minutes</h5>
           <h5 style={{fontSize:"15px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>{headerText}</h5>
           

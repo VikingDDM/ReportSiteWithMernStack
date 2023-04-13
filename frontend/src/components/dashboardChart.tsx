@@ -101,7 +101,7 @@ export default function DashboardChart() {
 
   return (
     <React.Fragment>
-      <DashboardChartTitle>{"Total Income This Year (" + (new Date().getFullYear()).toString() + ")"}</DashboardChartTitle>
+      <DashboardChartTitle>{"Total Income This Year (" + (new Date(new Date().toLocaleString("ja-JP")).getFullYear()).toString() + ")"}</DashboardChartTitle>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           width={500}

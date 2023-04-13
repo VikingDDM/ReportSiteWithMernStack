@@ -6,15 +6,10 @@ import { toast } from 'react-toastify';
 
 type IAdminFreelancerInfoDeleteButtonProps = {
     info_id: string;
-    settingVpsInfoID: () => void;
   }
-const AdminVpsInfoDeleteButton = ({info_id, settingVpsInfoID} : IAdminFreelancerInfoDeleteButtonProps) => {
+const AdminVpsInfoDeleteButton = ({info_id} : IAdminFreelancerInfoDeleteButtonProps) => {
 
     const [deleteVpsInfo, { isLoading, error, isError }] = useDeleteVpsInfoMutation();
-    
-    useEffect(() => {
-        settingVpsInfoID(); 
-    }, [info_id])
     
     useEffect(() => {
         if (isError) {

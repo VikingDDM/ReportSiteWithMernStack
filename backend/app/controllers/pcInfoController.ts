@@ -98,3 +98,19 @@ export const getPcInfoHandler = async (
   }
 };
   
+
+// const pcInfo = await findAllPcInfo();
+
+// //setting timezone
+// const resetPcInfo = pcInfo.map((eachVal:any) => {
+//    const timezoneDate = new Date();
+//    const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+//    timezoneDate.setTime(timezoneSecond);
+//    return {
+//     _id : eachVal._id,
+//     username : eachVal.username,
+//     deviceName : eachVal.deviceName,
+//     hardware : eachVal.hardware,
+//     created_at : timezoneDate.toLocaleString()
+//    }
+// })
