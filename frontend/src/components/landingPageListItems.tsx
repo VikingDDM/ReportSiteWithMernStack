@@ -441,7 +441,7 @@ const AdminListItems = () => {
           <ListItemIcon>
             <SettingsBrightnessIcon style={{color:"lightslategrey"}}/>
           </ListItemIcon>
-          <ListItemText primary="Report Setting" style={{color:"lightslategrey"}}/>
+          <ListItemText primary="Server Timezone" style={{color:"lightslategrey"}}/>
         </ListItemButton>
       </ListItem>
       <ListItem component="div" disablePadding>

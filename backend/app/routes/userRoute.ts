@@ -5,8 +5,10 @@ import {
   updateRoleHandler,
   deleteUserHandler,
   updatePasswordHandler,
+  getServerTimeZoneHandler,
+  updateServerTimeZoneHandler,
 } from '../controllers/userController';
-import {updateRoleSchema, deleteUserSchema, updatePasswordSchema} from '../schemas/userSchema'
+import {updateRoleSchema, deleteUserSchema, updatePasswordSchema, updateTimeZoneSchema} from '../schemas/userSchema'
 import { deserializeUser } from '../middleware/deserializeUser';
 import { requireUser } from '../middleware/requireUser';
 import { validate } from "../middleware/validate";
@@ -18,6 +20,13 @@ router.use(deserializeUser, requireUser);
 // Get my info route
 router.get('/me', getMeHandler);
 router.get('/all',getAllUsersHandler);
+router.get('/timezone',getServerTimeZoneHandler);
+router
+  .route("/timezone/:userinfoId")
+  .patch(
+    validate(updateTimeZoneSchema),
+    updateServerTimeZoneHandler
+  );
 router
   .route("/pwd/:userinfoId")
   .patch(

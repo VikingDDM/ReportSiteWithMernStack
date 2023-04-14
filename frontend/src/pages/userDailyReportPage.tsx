@@ -77,7 +77,7 @@ const UserDailyReportPage = () => {
     useEffect(() => {
       if((new Date().getUTCDay()) === 0 || (new Date().getUTCDay()) === 6) {
         setHeaderText('This is weekend. Have a rest.')
-      } else if(new Date().getUTCHours() +9 <18){setHeaderText('This is not report time.')}
+      } else if((new Date().getUTCHours() +9) <18 || (new Date().getUTCHours() +9)>23){setHeaderText('This is not report time.')}
     },[])
 // model action section
     const [activeStep, setActiveStep] = React.useState(0);

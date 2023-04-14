@@ -1,8 +1,59 @@
 import { NextFunction, Request, Response } from 'express';
-import { UpdateRoleInput, DeleteUserInput, UpdatePasswordInput} from '../schemas/userSchema'
+import { UpdateRoleInput, DeleteUserInput, UpdatePasswordInput, UpdateServerTimeZoneInput} from '../schemas/userSchema'
 import { findAllUsers, findAndUpdateUser, findOneAndDeleteUser, findUser } from '../services/userService';
 import AppError from "../utils/appError";
 import bcrypt from 'bcryptjs';
+
+export const getServerTimeZoneHandler = async(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const user = await findUser(queryServerTimeZone);
+    
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const updateServerTimeZoneHandler = async (
+  req: Request<UpdateServerTimeZoneInput["params"], {}, UpdateServerTimeZoneInput["body"]>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await findAndUpdateUser(
+      { _id: req.params.userinfoId },
+      {
+        serverTimezone: req.body.serverTimezone
+      },
+      {upsert: true, runValidators: false, new: true, lean: true }
+    );
+  
+    if (!user) {
+      return next(new AppError("Post with that ID not found", 404));
+    } 
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user
+      },
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
 
 export const getMeHandler = (
   req: Request,

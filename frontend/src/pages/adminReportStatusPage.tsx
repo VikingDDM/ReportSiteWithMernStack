@@ -25,7 +25,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
@@ -189,7 +189,7 @@ const AdminReportStatusPage = () => {
            <h5 style={{fontSize:"20px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}><span style={{color:"brown"}}>{unreportedNames.toString()}</span> haven't reported this day {weekend}</h5>
            <LocalizationProvider dateAdapter={AdapterDayjs}>
              <DemoContainer components={['DateTimePicker']}>
-               <DateTimePicker
+               <DatePicker
                  label="Controlled picker"
                  value={dateValue}
                  onChange={(newValue) => setDateValue(newValue)}

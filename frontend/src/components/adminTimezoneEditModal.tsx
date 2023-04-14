@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Modal } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import { object, string, TypeOf } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUpdatePayPlanMutation } from "../redux/api/paymentApi";
+import { useUpdateTimezoneMutation } from "../redux/api/userApi";
 import { toast } from 'react-toastify';
 
 const style = {
@@ -23,27 +23,25 @@ const style = {
     p: 4,
   };
 
-type IUserPayInfoEditModelProps = {
+type IUserTimezoneEditModalProps = {
   modalShow: boolean;
   handleModalClose: () => void;
-  payplan_id: any;
+  timezoneInfo_id: any;
   defaultValueA: any;
-  defaultValueB: any;
 }
 
-const updatePayPlanSchema = object({
-    name: string(),
-    plan: string(),
+const updateTimezoneSchema = object({
+    serverTimezone: string().min(1, 'Time is required'),
 }).partial();
 
-export type IUpdatePayPlan = TypeOf<typeof updatePayPlanSchema>;
+export type IUpdateTimezoneInfo = TypeOf<typeof updateTimezoneSchema>;
 
-const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, defaultValueA, defaultValueB} : IUserPayInfoEditModelProps) => {
+const AdminTimezoneInfoEditModal = ({modalShow, handleModalClose, timezoneInfo_id, defaultValueA, } : IUserTimezoneEditModalProps) => {
 
-    const [updatePayPlan, { isLoading, isError, error, isSuccess }] = useUpdatePayPlanMutation();
+    const [updateTimezoneInfo, { isLoading, isError, error, isSuccess }] = useUpdateTimezoneMutation();
     
-    const methods = useForm<IUpdatePayPlan>({
-        resolver: zodResolver(updatePayPlanSchema),
+    const methods = useForm<IUpdateTimezoneInfo>({
+        resolver: zodResolver(updateTimezoneSchema),
     });
 
     const {
@@ -51,12 +49,14 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
         handleSubmit,
         register,
         setValue,
-        formState: { isSubmitting },
+        clearErrors,
+        setError,
+        formState: { isSubmitting, errors },
     } = methods;
 
     useEffect(() => {
-      setValue('name', defaultValueA)
-      setValue('plan', defaultValueB)
+      clearErrors('serverTimezone');
+      setValue('serverTimezone', defaultValueA)
     }, [modalShow])
 
     useEffect(() => {
@@ -87,8 +87,15 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmitting]);
     
-    const onSubmitHandler: SubmitHandler<IUpdatePayPlan> = (values) => {
-        updatePayPlan({ id: payplan_id, payment: values });
+    const onSubmitHandler: SubmitHandler<IUpdateTimezoneInfo> = (values) => {
+        if(values.serverTimezone !== undefined) {
+            if(parseInt(values.serverTimezone) >14 || parseInt(values.serverTimezone) <-12 || Number.isInteger(parseFloat(values.serverTimezone)) !== true){
+                setError('serverTimezone', { type: 'custom', message: 'Invalid Timezone' });
+            } else {
+                updateTimezoneInfo({ id: timezoneInfo_id, timezoneInfo: values });
+                window.location.reload();
+            }
+        }
     }
 
     return(
@@ -99,20 +106,22 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
           >  
             <Box sx={style}>
                <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Change the plan?
+                  Set timezone? (from -12 to 14)
                </Typography>
                <Box sx={{ width: '100%' }}>
                 <FormProvider {...methods}>
                    <Box component="form" noValidate autoComplete='off' onSubmit={handleSubmit(onSubmitHandler)} sx={{ mt: 3 }}>
                         <Paper style={{boxShadow:"none"}}>
-                          <p style={{margin:"unset", color:"gray"}}>Plan</p>
+                          <p style={{margin:"unset", color:"gray"}}>Server Timezone</p>
                           <TextField
                             fullWidth 
-                            defaultValue={defaultValueB}
+                            defaultValue={defaultValueA}
                             type="number"
-                            style={{ marginTop:"8px",paddingRight:"10px", paddingLeft:"10px"}}
-                            {...register('plan')}
-                          />
+                            error={!!errors['serverTimezone']}
+                            style={{ marginTop:"8px", paddingRight:"10px", paddingLeft:"10px"}}
+                            {...register('serverTimezone')}
+                          /> 
+                          {errors.serverTimezone && <p style={{margin:"unset", color:"red"}}>{errors.serverTimezone.message}</p>}
                         </Paper>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
@@ -127,4 +136,4 @@ const AdminPayPlanEditModal = ({modalShow, handleModalClose, payplan_id, default
     )
 }
 
-export default AdminPayPlanEditModal;
+export default AdminTimezoneInfoEditModal;

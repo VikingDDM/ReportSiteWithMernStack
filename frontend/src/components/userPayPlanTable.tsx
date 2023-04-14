@@ -119,11 +119,10 @@ function UserPayPlanTable( props: ChildProps) {
     const [dataName, setDataName] = React.useState("");
     const [dataPlan, setDataPlan] = React.useState("");
     const [show, setShow] = React.useState(false);
-    const thisMonth = new Date().getMonth() + 1;
-    const thisDay = new Date().getDate();
+    const [realPayPlan, setRealPayPlan] = React.useState([]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - payPlan?.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - realPayPlan?.length) : 0;
 
     const handleShow = (data: any) => {setShow(true); 
                                        setDataid(data._id); 
@@ -146,12 +145,21 @@ function UserPayPlanTable( props: ChildProps) {
     };
     useEffect(() => {
       let payPlanDates:any = [];
-        if(payPlan?.length !== 0){
-          payPlan?.map((eachPayPlan : any) => {
-            payPlanDates.push(eachPayPlan.payPlanDate)
-          })
-        } 
-        
+      let virtualPayPlan:any = [];
+        if(payPlan !== undefined){
+          if(payPlan.length !== 0){
+            payPlan.map((eachPayPlan : any) => {
+              payPlanDates.push(eachPayPlan.payPlanDate)
+              virtualPayPlan.push(eachPayPlan);
+            })
+          } 
+          virtualPayPlan.sort((p1: any, p2:any) => {
+            if (p1.payPlanDate > p2.payPlanDate) return -1;
+            if (p1.payPlanDate < p2.payPlanDate) return 1;
+            return 0;
+          });
+        }
+        setRealPayPlan(virtualPayPlan);
         props.setPlanSubmitAble(payPlanDates)
     }, [payPlan])
 
@@ -189,8 +197,8 @@ function UserPayPlanTable( props: ChildProps) {
           </TableHead>
           <TableBody>
             {(rowsPerPage > 0
-              ? payPlan?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : payPlan
+              ? realPayPlan?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              : realPayPlan
             )?.map((row:any, key: any) => (
               <TableRow key={key} style={{border: "1px solid #ab9c5b"}}>
                 <StyledTableCell style={{ width: 200,whiteSpace:"normal",wordBreak:"break-word" }} align="center">
@@ -221,7 +229,7 @@ function UserPayPlanTable( props: ChildProps) {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={7}
-                count={payPlan?.length}
+                count={realPayPlan?.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -238,12 +246,12 @@ function UserPayPlanTable( props: ChildProps) {
             </TableRow>
           </TableFooter>
         </Table>
-        {/* <AdminPayPlanEditModal 
+        <AdminPayPlanEditModal 
                   modalShow = {show} 
                   handleModalClose={handleClose}   
                   payplan_id = {dataid}
                   defaultValueA = {dataName} 
-                  defaultValueB = {dataPlan} /> */}
+                  defaultValueB = {dataPlan} />
       </TableContainer>
     );
   }

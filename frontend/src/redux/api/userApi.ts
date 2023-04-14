@@ -4,6 +4,7 @@ import customFetchBase from "./customFetchBase";
 import { IUser } from "./types";
 import {IUpdateRole} from "../../components/adminRoleEditModal"
 import {IUpdatePWD} from "../../components/adminPasswordEditModal"
+import { IUpdateTimezoneInfo } from "../../components/adminTimezoneEditModal";
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -70,10 +71,35 @@ export const userApi = createApi({
           response.data.user,
       }
     ),  
+    updateTimezone: builder.mutation<any, { id: string; timezoneInfo: IUpdateTimezoneInfo }>(
+      {
+        query({ id, timezoneInfo }) {
+          return {
+            url: `/users/timezone/${id}`,
+            method: 'PATCH',
+            credentials: 'include',
+            body: timezoneInfo,
+          };
+        },
+        
+        transformResponse: (response: { data: { user: any } }) =>
+          response.data.user,
+      }
+    ),  
     getAllUsers: builder.query<any, void>({
       query() {
         return {
           url: "users/all",
+          credentials: "include",
+        };
+      },
+      transformResponse: (result: { data: { user: any } }) =>
+        result.data.user
+    }),
+    getServerTimeZone: builder.query<any, void>({
+      query() {
+        return {
+          url: "users/timezone",
           credentials: "include",
         };
       },
@@ -98,4 +124,6 @@ export const {
   useUpdateRoleMutation,
   useUpdatePWDMutation,
   useDeleteUserMutation,
+  useGetServerTimeZoneQuery,
+  useUpdateTimezoneMutation,
 } = userApi;

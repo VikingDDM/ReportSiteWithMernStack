@@ -146,14 +146,14 @@ function AdminPaymentStatusTable() {
       if(monthlyPay.length !== 0) {
         if(realAmountSort){
           monthlyPay.sort((p1: any, p2:any) => {
-            if (p1.realAmount > p2.realAmount) return -1;
-            if (p1.realAmount < p2.realAmount) return 1;
+            if (parseFloat(p1.realAmount)  > parseFloat(p2.realAmount)) return -1;
+            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return 1;
             return 0;
           });
         } else {
           monthlyPay.sort((p1: any, p2:any) => {
-            if (p1.realAmount < p2.realAmount) return -1;
-            if (p1.realAmount > p2.realAmount) return 1;
+            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return -1;
+            if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return 1;
             return 0;
           });
         }
@@ -164,14 +164,14 @@ function AdminPaymentStatusTable() {
       if(monthlyPay.length !== 0) {
         if(amountSort){
           monthlyPay.sort((p1: any, p2:any) => {
-            if (p1.amount > p2.amount) return -1;
-            if (p1.amount < p2.amount) return 1;
+            if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return -1;
+            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return 1;
             return 0;
           });
         } else {
           monthlyPay.sort((p1: any, p2:any) => {
-            if (p1.amount < p2.amount) return -1;
-            if (p1.amount > p2.amount) return 1;
+            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return -1;
+            if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return 1;
             return 0;
           });
         }

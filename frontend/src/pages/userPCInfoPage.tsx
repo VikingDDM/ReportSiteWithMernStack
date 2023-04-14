@@ -144,7 +144,7 @@ const UserPCInfoPage = () => {
       }
     return(
         <Container maxWidth={false}>
-             <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>UserPCInfoPage</h5>
+             <h5 style={{fontSize:"30px", color:"grey",marginBottom:"20px" ,fontWeight:"lighter"}}>PC Information</h5>
              <TableContainer component={Paper} style={{marginTop:"30px"}} >
         <Table className='borderTable' sx={{ Width: 500 }} aria-label="custom pagination table" >
           <TableHead>

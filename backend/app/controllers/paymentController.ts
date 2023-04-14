@@ -14,9 +14,8 @@ import {
   findAndUpdatePayment,
   findOneAndDelete,
   findPayment,
-  findPaymentById,
 } from "../services/paymentService";
-import { findAllUsers, findUserById } from "../services/userService";
+import { findAllUsers, findUserById, findUsers } from "../services/userService";
 import AppError from "../utils/appError";
 
 export const createPayPlanHandler = async (
@@ -170,7 +169,17 @@ export const createPayHistoryHandler = async (
       await createEachMonthlyTotal({ eachMonthlyTotal, eachName });
 
       //response
-      const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+      const queryServerTimeZone = {
+        serverTimezone: { $ne: null}
+      }
+      const timezone = await findUsers(queryServerTimeZone);
+      let timezoneAdding:number;
+      if(parseInt(timezone[0].serverTimezone)<0){
+        timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+      } else {
+        timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+      }
+      const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
       today = new Date();
       today.setTime(timezoneSecond);
       firstDay = new Date();
@@ -260,7 +269,17 @@ export const getMonthlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
     const today = new Date();
     today.setTime(timezoneSecond);
     const firstDay = new Date();
@@ -290,7 +309,7 @@ export const getMonthlyPaymentHandler = async (
 
     const resetRealMonthlyAmounts = realMonthlyAmounts.map((eachVal:any) => {
       const timezoneDate = new Date();
-      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
       timezoneDate.setTime(timezoneSecond);
       return {
        _id : eachVal._id,
@@ -696,7 +715,18 @@ export const getAllMonthlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
+    console.log(timezoneAdding)
     const today = new Date();
     today.setTime(timezoneSecond);
     const firstDay = new Date();
@@ -792,7 +822,17 @@ export const getAllYearlyPaymentHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
     const today = new Date();
     today.setTime(timezoneSecond);
     const firstDay = new Date();
@@ -834,7 +874,7 @@ export const getAllYearlyPaymentHandler = async (
         recentPayments.slice(recentPayments.length-6);
         resetRecentPayments = recentPayments.map((eachVal:any) => {
           const timezoneDate = new Date();
-          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
           timezoneDate.setTime(timezoneSecond);
           return {
            _id : eachVal._id,
@@ -928,10 +968,20 @@ export const getAllPaymentHistoryHandler = async (
           created_at: { $gte: firstDay, $lte: lastDay },
           amount: { $ne: null}
         }
+        const queryServerTimeZone = {
+          serverTimezone: { $ne: null}
+        }
+        const timezone = await findUsers(queryServerTimeZone);
+        let timezoneAdding:number;
+        if(parseInt(timezone[0].serverTimezone)<0){
+          timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+        } else {
+          timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+        }
         recentPayments = await findPayment(queryRecentPayments);
         resetRecentPayments = recentPayments.map((eachVal:any) => {
           const timezoneDate = new Date();
-          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+          const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
           timezoneDate.setTime(timezoneSecond);
           return {
            _id : eachVal._id,

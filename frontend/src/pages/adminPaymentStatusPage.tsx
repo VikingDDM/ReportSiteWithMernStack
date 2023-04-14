@@ -183,8 +183,7 @@ const AdminPaymentStatusPage = () => {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             error={!!errors['name']}
-                            fullWidth
-                            style={{ marginTop:"2px", paddingRight:"10px", paddingLeft:"10px"}}
+                            style={{ marginTop:"2px",marginLeft:"10px", width:"98.3%", paddingRight:"12px", paddingLeft:"12px"}}
                             {...register('name')}
                           >
                             {usersForSelect?.map((userForSelect : any, key: any) => {

@@ -22,6 +22,13 @@ const params = {
   }),
 };
 
+export const updateTimeZoneSchema = object({
+  ...params,
+  body: object({
+    serverTimezone: string(),
+  }).partial(),
+});
+
 export const updateRoleSchema = object({
   ...params,
   body: object({
@@ -57,3 +64,4 @@ export type LoginUserInput = TypeOf<typeof loginUserSchema>["body"];
 export type UpdateRoleInput = TypeOf<typeof updateRoleSchema>;
 export type UpdatePasswordInput = TypeOf<typeof updatePasswordSchema>;
 export type DeleteUserInput = TypeOf<typeof deleteUserSchema>["params"];
+export type UpdateServerTimeZoneInput = TypeOf<typeof updateTimeZoneSchema>;

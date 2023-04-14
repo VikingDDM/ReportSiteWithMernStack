@@ -82,8 +82,8 @@ export default function DashboardOrders() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row : any) => (
-            <TableRow key={row.id}>
+          {rows.map((row : any, key:any) => (
+            <TableRow key={key}>
               <TableCell>{row.date}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.paymentMethod}</TableCell>

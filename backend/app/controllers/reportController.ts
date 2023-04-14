@@ -11,7 +11,7 @@ import {
   findOneAndDelete,
   findReports,
 } from "../services/reportService";
-import { findUserById, findAllUsers, findUsers } from "../services/userService";
+import { findUserById, findUsers} from "../services/userService";
 import AppError from "../utils/appError";
 
 export const createReportHandler = async (
@@ -39,7 +39,18 @@ export const getUserDailyReportsHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
     const today = new Date();
     today.setTime(timezoneSecond);
     const tomorrow = new Date();
@@ -68,7 +79,7 @@ export const getUserDailyReportsHandler = async (
 
     const resetReports = reports.map((eachVal:any) => {
       const timezoneDate = new Date();
-      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
       timezoneDate.setTime(timezoneSecond);
       return {
        _id : eachVal._id,
@@ -100,7 +111,17 @@ export const getDailyReportStatusHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
     const today = new Date();
     today.setTime(timezoneSecond);
     const tomorrow = new Date();
@@ -129,7 +150,7 @@ export const getDailyReportStatusHandler = async (
 
     const resetReports = reports.map((eachVal:any) => {
       const timezoneDate = new Date();
-      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
       timezoneDate.setTime(timezoneSecond);
       return {
        _id : eachVal._id,
@@ -161,6 +182,16 @@ export const getReportStatusHandler = async (
   next: NextFunction,
 ) => {
   try {
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
     const timezoneSecond = Date.parse((new Date(req.params.reportId)).toUTCString());
     const today = new Date();
     today.setTime(timezoneSecond);
@@ -190,7 +221,7 @@ export const getReportStatusHandler = async (
 
     const resetReports = reports.map((eachVal:any) => {
       const timezoneDate = new Date();
-      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
       timezoneDate.setTime(timezoneSecond);
       return {
        _id : eachVal._id,
@@ -222,7 +253,17 @@ export const getUserWeeklyReportsHandler = async (
   next: NextFunction
 ) => {
   try {
-    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * 15;
+    const queryServerTimeZone = {
+      serverTimezone: { $ne: null}
+    }
+    const timezone = await findUsers(queryServerTimeZone);
+    let timezoneAdding:number;
+    if(parseInt(timezone[0].serverTimezone)<0){
+      timezoneAdding = 8 - parseInt(timezone[0].serverTimezone);
+    } else {
+      timezoneAdding = 9 - parseInt(timezone[0].serverTimezone);
+    }
+    const timezoneSecond = Date.parse((new Date()).toUTCString()) + 3600000 * timezoneAdding;
     const today = new Date();
     today.setTime(timezoneSecond);
     const weeklyDay = today.getDay();
@@ -262,7 +303,7 @@ export const getUserWeeklyReportsHandler = async (
 
     const resetReports = reports.map((eachVal:any) => {
       const timezoneDate = new Date();
-      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * 15;
+      const timezoneSecond = Date.parse((new Date(eachVal.created_at)).toUTCString()) + 3600000 * timezoneAdding;
       timezoneDate.setTime(timezoneSecond);
       return {
        _id : eachVal._id,
