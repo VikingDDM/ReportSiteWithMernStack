@@ -33,6 +33,7 @@ const AdminPaymentStatusDeleteButton = ({ payment_id} : IAdminPaymentStatusDelet
       }, [isLoading]);
     
       const onDeleteHandler = () => {
+        console.log(payment_id)
         if (window.confirm('Are you sure')) {
           deletePayment(payment_id);
         }

@@ -164,14 +164,14 @@ function AdminPaymentStatusTable() {
       if(monthlyPay.length !== 0) {
         if(amountSort){
           monthlyPay.sort((p1: any, p2:any) => {
-            if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return -1;
-            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return 1;
+            if (parseFloat(p1.amount) > parseFloat(p2.amount)) return -1;
+            if (parseFloat(p1.amount) < parseFloat(p1.amount)) return 1;
             return 0;
           });
         } else {
           monthlyPay.sort((p1: any, p2:any) => {
-            if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return -1;
-            if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return 1;
+            if (parseFloat(p1.amount) < parseFloat(p1.amount)) return -1;
+            if (parseFloat(p1.amount) > parseFloat(p1.amount)) return 1;
             return 0;
           });
         }
@@ -188,6 +188,7 @@ function AdminPaymentStatusTable() {
     const [show, setShow] = React.useState(false);
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - monthlyPay.length) : 0;
+    console.log(monthlyPay)
 
     const handleShow = (data: any) => {setShow(true); 
                                        setDataid(data._id); 

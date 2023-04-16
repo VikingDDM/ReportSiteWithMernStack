@@ -189,14 +189,14 @@ const AdminPaymentHistoryPage = () => {
     if(tableData.length !== 0) {
       if(realAmountSort){
         tableData.sort((p1: any, p2:any) => {
-          if (p1.realAmount > p2.realAmount) return -1;
-          if (p1.realAmount < p2.realAmount) return 1;
+          if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return -1;
+          if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return 1;
           return 0;
         });
       } else {
         tableData.sort((p1: any, p2:any) => {
-          if (p1.realAmount < p2.realAmount) return -1;
-          if (p1.realAmount > p2.realAmount) return 1;
+          if (parseFloat(p1.realAmount) < parseFloat(p2.realAmount)) return -1;
+          if (parseFloat(p1.realAmount) > parseFloat(p2.realAmount)) return 1;
           return 0;
         });
       }
@@ -207,14 +207,14 @@ const AdminPaymentHistoryPage = () => {
     if(tableData.length !== 0) {
       if(amountSort){
         tableData.sort((p1: any, p2:any) => {
-          if (p1.amount > p2.amount) return -1;
-          if (p1.amount < p2.amount) return 1;
+          if (parseFloat(p1.amount) > parseFloat(p2.amount)) return -1;
+          if (parseFloat(p1.amount) < parseFloat(p2.amount)) return 1;
           return 0;
         });
       } else {
         tableData.sort((p1: any, p2:any) => {
-          if (p1.amount < p2.amount) return -1;
-          if (p1.amount > p2.amount) return 1;
+          if (parseFloat(p1.amount) < parseFloat(p2.amount)) return -1;
+          if (parseFloat(p1.amount) > parseFloat(p2.amount)) return 1;
           return 0;
         });
       }
