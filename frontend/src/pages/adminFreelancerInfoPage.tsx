@@ -80,7 +80,7 @@ const AdminFreelancerInfoPage = () => {
     useCreateFreelancerInfoMutation();
 
     useEffect(() => {
-     
+      console.log("result"); 
       if (isError) {
         if (Array.isArray((error as any).data.error)) {
           (error as any).data.error.forEach((el: any) =>
