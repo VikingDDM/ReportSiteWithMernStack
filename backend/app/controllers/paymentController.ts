@@ -33,6 +33,7 @@ export const createPayPlanHandler = async (
         },
       });
     } catch (err: any) {
+      console.log(err); 
       next(err);
     }
 };
