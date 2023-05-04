@@ -68,7 +68,10 @@ const AdminPaymentStatusPage = () => {
       setNameSelect(event.target.value as string);
       setValue('name', nameSelect);
     };
-
+    const handleNameSelectChange1 = (event: SelectChangeEvent) => {
+      setNameSelect(event.target.value as string);
+      setValue('name', nameSelect);
+    };
     const handleClose = () => {
       setModelShow(false);
       setValue('name', '');

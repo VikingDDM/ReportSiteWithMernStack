@@ -73,6 +73,7 @@ const UserDailyReportPage = () => {
     const [buttonAtive, setButtonActive] = React.useState('');
     const reportUser = useAppSelector(user);
     const [headerText, setHeaderText] = React.useState('');
+    console.log("already started"); 
     
     useEffect(() => {
       if((new Date().getUTCDay()) === 0 || (new Date().getUTCDay()) === 6) {
