@@ -54,6 +54,7 @@ export const updatePcInfoHandler = async (
       },
     });
   } catch (err: any) {
+    console.log(err); 
     next(err);
   }
 };
@@ -75,6 +76,7 @@ export const deletePcInfoHandler = async (
       data: null,
     });
   } catch (err: any) {
+    console.log(err); 
     next(err);
   }
 };
